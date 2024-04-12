@@ -1,0 +1,14 @@
+# OS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+![iI]con[_a-zA-Z0-9]
+._*
+.Spotlight-V100
+.Trashes
+
+# Vim
+*~
+tags
+
