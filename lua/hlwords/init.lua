@@ -44,6 +44,7 @@ local default_config = {
   },
   highlight_priority = 10,
   random = true,
+  strict_word = false,
 }
 
 
@@ -148,6 +149,7 @@ function M.retrieve_text()
 
   return text
 end
+
 
 -- =================================================================================================
 --  Definition (Highlight Related)
@@ -278,21 +280,18 @@ function HL.on(word_pattern)
   end
 
   local match_id = -1
+  local wins = api.nvim_list_wins()
 
-  for win_number = 1, fn.winnr('$') do
-    local suceeded, registered_id, foo = pcall(function()
-      return fn.matchadd(
-        hl_group, word_pattern, config.highlight_priority, match_id, { window = win_number }
-      )
+  for _, win_id in pairs(wins) do
+    local registered_id = api.nvim_win_call(win_id, function()
+      return fn.matchadd(hl_group, word_pattern, config.highlight_priority, match_id)
     end)
 
-    if suceeded and (match_id == -1) then
+    if registered_id == -1 then
+      M.fail('Unable to add match "' .. word_pattern .. '" in window (id=' .. win_id .. ').')
+    else
       match_id = registered_id
     end
-  end
-
-  if match_id == -1 then
-    M.fail('Unable to add match "' .. word_pattern .. '" in any windows.')
   end
 
   HL.apply(hl_group, word_pattern, match_id)
@@ -301,15 +300,10 @@ end
 ---@package
 ---@param match_id integer
 function HL.release(match_id)
-  for win_number = 1, fn.winnr('$') do
-    local suceeded, result = pcall(function()
-      return fn.matchdelete(match_id, win_number)
-    end)
+  local result = fn.matchdelete(match_id)
 
-    if (not suceeded) or (result == -1) then
-      M.fail('Unable to remove the match (id=' .. match_id .. ') in the following reasons:')
-      M.fail(result)
-    end
+  if result == -1 then
+    M.fail('Unable to remove the match (id=' .. match_id .. ').')
   end
 end
 
@@ -366,11 +360,9 @@ function API.toggle()
 
   local word_pattern = ''
 
-  if is_visual_mode then
+  if is_visual_mode or not config.strict_word then
     word_pattern = M.apply_pattern_mode(word)
   else
-    -- "\<" and "\>" are word boundary specifiers, which are only needed in normal mode when
-    -- targeting the word under the cursor.
     word_pattern = M.apply_pattern_mode('\\<' .. word .. '\\>')
   end
 
@@ -380,6 +372,7 @@ function API.toggle()
     HL.on(word_pattern)
   end
 end
+
 
 -- =================================================================================================
 --  Export
