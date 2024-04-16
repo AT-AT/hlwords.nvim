@@ -78,6 +78,13 @@ Please also refer to the sample contents regarding configurations.
       -- Order of use of highlight colors.
       -- If false, they will be used in the order specified in the "colors" option.
       random = true,
+
+      -- Handling of words specified in normal mode.
+      -- When highlighting is executed in normal mode, a pattern including word boundaries is
+      -- registered ('\\<' .. word .. '\\>') in interestingwords.nvim, but not in vim-quickhl.
+      -- If set to false, the match pattern will no longer represent exact words, so the behavior
+      -- will be similar to vim-quickhl.
+      strict_word = false,
     })
 
     -- If you do not specify a keymap with the "keys" option, please set it as follows.

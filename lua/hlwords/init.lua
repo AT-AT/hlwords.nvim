@@ -44,6 +44,7 @@ local default_config = {
   },
   highlight_priority = 10,
   random = true,
+  strict_word = false,
 }
 
 
@@ -359,11 +360,9 @@ function API.toggle()
 
   local word_pattern = ''
 
-  if is_visual_mode then
+  if is_visual_mode or not config.strict_word then
     word_pattern = M.apply_pattern_mode(word)
   else
-    -- "\<" and "\>" are word boundary specifiers, which are only needed in normal mode when
-    -- targeting the word under the cursor.
     word_pattern = M.apply_pattern_mode('\\<' .. word .. '\\>')
   end
 
