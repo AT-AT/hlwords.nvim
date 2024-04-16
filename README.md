@@ -78,7 +78,6 @@ Please also refer to the sample contents regarding configurations.
       -- Order of use of highlight colors.
       -- If false, they will be used in the order specified in the "colors" option.
       random = true,
-      },
     })
 
     -- If you do not specify a keymap with the "keys" option, please set it as follows.
