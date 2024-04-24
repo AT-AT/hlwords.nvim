@@ -94,17 +94,27 @@ end
 ---@param target string
 ---@return string
 function M.apply_pattern_mode(target)
+  local has_uppercase_letters = fn.match(target, '\\u') ~= -1
+  local ignore_case = vim.api.nvim_get_option_value('ignorecase', {})
+  local smart_case = vim.api.nvim_get_option_value('smartcase', {})
+  local text = target
+  local case_flag = '\\C' -- Case-Sensitive(\C)
+
+  -- To prevent patterns with the same meaning but with different "case" letters from being
+  -- registered, generate a pattern using lowercase letters if possible.
+  if ignore_case and (not smart_case) then
+    text = string.lower(text)
+  end
+
+  -- Depending on the values of "case" related options and the contents of the target string, use
+  -- the Case-Insensitive(\c) flag if possible.
+  if ignore_case and (not smart_case or not has_uppercase_letters) then
+    case_flag = '\\c'
+  end
+
   -- With "Very Nomagic(\V)", meta characters included in the target string are treated as normal
   -- literals as much as possible.
-  local pattern_mode = '\\V' .. target
-
-  -- Case-Insensitive(\c), No-SmartCase(follow "ignorecase") or has no UpperCase-Letters(\u=[^A-Z]+)
-    if vim.o.ignorecase and (not vim.o.smartcase or fn.match(target, '\\u') == -1) then
-      return '\\c' .. pattern_mode
-  -- Case-Sensitive(\C)
-    else
-      return '\\C' .. pattern_mode
-    end
+  return case_flag .. '\\V' .. text
 end
 
 ---@package
