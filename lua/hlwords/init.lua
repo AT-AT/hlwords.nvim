@@ -8,8 +8,12 @@ local api = vim.api
 ---@see vim.fn
 local fn = vim.fn
 
+---@module 'hlwords.config'
+local config = require('hlwords.config')
+
 ---@module 'hlwords.letters'
 local letters = require('hlwords.letters')
+
 
 -- =================================================================================================
 --  Namespace
@@ -29,25 +33,8 @@ local HL = {} -- Just used to simplify the function name.
 --  Local Variable
 -- =================================================================================================
 
----@type string
-local app_name = 'Hlwords'
-
----@see default_config
-local config = {}
-
----@alias color_spec table<string, any> Options acceptable to vim.api.nvim_set_hl
----@type { colors: color_spec[], highlight_priority: integer, random: boolean }
-local default_config = {
-  colors = {
-    { fg = '#000000', bg = '#00ffff' },
-    { fg = '#ffffff', bg = '#ff00ff' },
-    { fg = '#000000', bg = '#ffff00' },
-    { fg = '#ffffff', bg = '#444444' },
-  },
-  highlight_priority = 10,
-  random = true,
-  strict_word = false,
-}
+---@type PluginOptions
+local options
 
 
 -- =================================================================================================
@@ -67,7 +54,7 @@ end
 ---@param level any @see vim.log.levels
 ---@param message string
 function M.notice(level, message)
-  vim.notify(app_name .. ': ' .. message, level)
+  vim.notify(config.plugin_name .. ': ' .. message, level)
 end
 
 ---@package
@@ -81,8 +68,8 @@ end
 
 ---@package
 function M.initialize_highlight()
-  for index, color_table in pairs(config.colors) do
-    local hl_group = app_name .. string.format('%02d', index)
+  for index, color_table in pairs(options.colors) do
+    local hl_group = config.plugin_name .. string.format('%02d', index)
 
     api.nvim_set_hl(0, hl_group, color_table)
     HL.register(hl_group)
@@ -171,7 +158,7 @@ function HL.pick()
     return nil
   end
 
-  if config.random then
+  if options.random then
     return picked[math.random(picked_count)]
   else
     table.sort(picked)
@@ -223,7 +210,7 @@ function HL.on(word_pattern)
 
   for _, win_id in pairs(wins) do
     local registered_id = api.nvim_win_call(win_id, function()
-      return fn.matchadd(hl_group, word_pattern, config.highlight_priority, match_id)
+      return fn.matchadd(hl_group, word_pattern, options.highlight_priority, match_id)
     end)
 
     if registered_id == -1 then
@@ -270,10 +257,10 @@ function API.clear()
   HL.sweep()
 end
 
----@param options table @see default_config
-function API.setup(options)
-  options = options or {}
-  config = vim.tbl_deep_extend('force', default_config, options)
+---@param user_options PluginOptions
+function API.setup(user_options)
+  user_options = user_options or {}
+  options = vim.tbl_deep_extend('force', config.default_options, user_options)
 
   M.initialize_highlight()
   math.randomseed(os.time())
@@ -299,7 +286,7 @@ function API.toggle()
 
   local word_pattern = ''
 
-  if is_visual_mode or not config.strict_word then
+  if is_visual_mode or not options.strict_word then
     word_pattern = letters.to_pattern(word)
   else
     word_pattern = letters.to_pattern('\\<' .. word .. '\\>')
