@@ -8,6 +8,8 @@ local api = vim.api
 ---@see vim.fn
 local fn = vim.fn
 
+---@module 'hlwords.letters'
+local letters = require('hlwords.letters')
 
 -- =================================================================================================
 --  Namespace
@@ -85,79 +87,6 @@ function M.initialize_highlight()
     api.nvim_set_hl(0, hl_group, color_table)
     HL.register(hl_group)
   end
-end
-
--- / Text Handler
--- -------------------------------------------------------------------------------------------------
-
----@package
----@param target string
----@return string
-function M.apply_pattern_mode(target)
-  local has_uppercase_letters = fn.match(target, '\\u') ~= -1
-  local ignore_case = vim.api.nvim_get_option_value('ignorecase', {})
-  local smart_case = vim.api.nvim_get_option_value('smartcase', {})
-  local text = target
-  local case_flag = '\\C' -- Case-Sensitive(\C)
-
-  -- To prevent patterns with the same meaning but with different "case" letters from being
-  -- registered, generate a pattern using lowercase letters if possible.
-  if ignore_case and (not smart_case) then
-    text = string.lower(text)
-  end
-
-  -- Depending on the values of "case" related options and the contents of the target string, use
-  -- the Case-Insensitive(\c) flag if possible.
-  if ignore_case and (not smart_case or not has_uppercase_letters) then
-    case_flag = '\\c'
-  end
-
-  -- With "Very Nomagic(\V)", meta characters included in the target string are treated as normal
-  -- literals as much as possible.
-  return case_flag .. '\\V' .. text
-end
-
----@package
----@return string
----
---- This method only accepts "v" (Visual, includes using operators like as "viw") or "^V" (V-Block),
---- not "V" (V-Line).<br>
---- After "getregion()" is merged, refactor using it. And once it's merged and sufficient
---- functionality is implemented, "vim.region" will be deprecated and will not be used.
-function M.retrieve_text()
-  local start_row, start_col = fn.getpos('v')[2], fn.getpos('v')[3]
-  local end_row, end_col = fn.getpos('.')[2], fn.getpos('.')[3]
-
-  -- Normalize the position to correspond to the tail processing rules of nvim_buf_get_text() in
-  -- the row/column direction.
-  if end_row < start_row then
-    start_row, end_row = end_row, start_row
-    start_col, end_col = end_col, start_col
-  elseif end_row == start_row and end_col < start_col then
-    start_col, end_col = end_col, start_col
-  end
-
-  -- In nvim_buf_get_text(), indexing is zero-based and row indices are end-inclusive, so simply
-  -- move the coordinates upward.
-  start_row = start_row - 1
-  end_row = end_row - 1
-
-  -- On the other hand, column indices are end-exclusive, so move only the starting position.
-  start_col = start_col - 1
-
-  local lines = api.nvim_buf_get_text(0, start_row, start_col, end_row, end_col, {})
-
-  vim.cmd('normal! ')
-
-  if vim.tbl_isempty(lines) then
-    return ''
-  end
-
-  local text = table.concat(vim.tbl_map(function(line)
-    return fn.escape(line, '\\')
-  end, lines), '\\n')
-
-  return text
 end
 
 
@@ -359,7 +288,7 @@ function API.toggle()
   local word = ''
 
   if is_visual_mode then
-    word = M.retrieve_text()
+    word = letters.retrieve()
   else
     word = fn.expand('<cword>')
   end
@@ -371,9 +300,9 @@ function API.toggle()
   local word_pattern = ''
 
   if is_visual_mode or not config.strict_word then
-    word_pattern = M.apply_pattern_mode(word)
+    word_pattern = letters.to_pattern(word)
   else
-    word_pattern = M.apply_pattern_mode('\\<' .. word .. '\\>')
+    word_pattern = letters.to_pattern('\\<' .. word .. '\\>')
   end
 
   if HL.is_used_for(word_pattern) then
