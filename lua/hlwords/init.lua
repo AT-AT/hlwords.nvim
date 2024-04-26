@@ -14,6 +14,9 @@ local config = require('hlwords.config')
 ---@module 'hlwords.letters'
 local letters = require('hlwords.letters')
 
+---@module 'hlwords.utils'
+local utils = require('hlwords.utils')
+
 
 -- =================================================================================================
 --  Namespace
@@ -40,28 +43,6 @@ local options
 -- =================================================================================================
 --  Function (Module Local)
 -- =================================================================================================
-
--- / Notification
--- -------------------------------------------------------------------------------------------------
-
----@package
----@param message string
-function M.fail(message)
-  M.notice(vim.log.levels.ERROR, message)
-end
-
----@package
----@param level any @see vim.log.levels
----@param message string
-function M.notice(level, message)
-  vim.notify(config.plugin_name .. ': ' .. message, level)
-end
-
----@package
----@see M.fail
-function M.warn(message)
-  M.notice(vim.log.levels.WARN, message)
-end
 
 -- / Setup
 -- -------------------------------------------------------------------------------------------------
@@ -188,7 +169,7 @@ function HL.off(word_pattern)
   local record = HL.record_of(word_pattern)
 
   if not record then
-    M.fail('Unable to find the highlight and match-id for "' .. word_pattern .. '".')
+    utils.fail('Unable to find the highlight and match-id for "' .. word_pattern .. '".')
     return
   end
 
@@ -201,7 +182,7 @@ function HL.on(word_pattern)
   local hl_group = HL.pick()
 
   if not hl_group then
-    M.warn('No more highlights in stock.')
+    utils.warn('No more highlights in stock.')
     return
   end
 
@@ -214,7 +195,7 @@ function HL.on(word_pattern)
     end)
 
     if registered_id == -1 then
-      M.fail('Unable to add match "' .. word_pattern .. '" in window (id=' .. win_id .. ').')
+      utils.fail('Unable to add match "' .. word_pattern .. '" in window (id=' .. win_id .. ').')
     else
       match_id = registered_id
     end
@@ -229,7 +210,7 @@ function HL.release(match_id)
   local result = fn.matchdelete(match_id)
 
   if result == -1 then
-    M.fail('Unable to remove the match (id=' .. match_id .. ').')
+    utils.fail('Unable to remove the match (id=' .. match_id .. ').')
   end
 end
 
@@ -267,10 +248,8 @@ function API.setup(user_options)
 end
 
 function API.toggle()
-  local mode = api.nvim_get_mode().mode
-
   -- Only accepts "v" (Visual, includes like as "viw") or "^V" (V-Block), not "V" (V-Line).
-  local is_visual_mode = mode == 'v' or mode == '\x16' -- \x16 == '^V'
+  local is_visual_mode = utils.is_acceptable_vmode()
 
   local word = ''
 
