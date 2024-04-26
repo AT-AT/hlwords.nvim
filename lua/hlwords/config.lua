@@ -39,6 +39,15 @@ M.default_options = {
   strict_word = false,
 }
 
+---@type PluginOptions
+M.options = vim.tbl_deep_extend('force', {}, M.default_options)
+
+---@param local_options PluginOptions?
+function M.merge_options(local_options)
+  local_options = local_options or {}
+  M.options = vim.tbl_deep_extend('force', M.options, local_options)
+end
+
 
 -- =================================================================================================
 --  Export

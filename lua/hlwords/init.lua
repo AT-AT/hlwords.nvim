@@ -33,14 +33,6 @@ local HL = {} -- Just used to simplify the function name.
 
 
 -- =================================================================================================
---  Local Variable
--- =================================================================================================
-
----@type PluginOptions
-local options
-
-
--- =================================================================================================
 --  Function (Module Local)
 -- =================================================================================================
 
@@ -49,7 +41,7 @@ local options
 
 ---@package
 function M.initialize_highlight()
-  for index, color_table in pairs(options.colors) do
+  for index, color_table in pairs(config.options.colors) do
     local hl_group = config.plugin_name .. string.format('%02d', index)
 
     api.nvim_set_hl(0, hl_group, color_table)
@@ -139,7 +131,7 @@ function HL.pick()
     return nil
   end
 
-  if options.random then
+  if config.options.random then
     return picked[math.random(picked_count)]
   else
     table.sort(picked)
@@ -191,7 +183,7 @@ function HL.on(word_pattern)
 
   for _, win_id in pairs(wins) do
     local registered_id = api.nvim_win_call(win_id, function()
-      return fn.matchadd(hl_group, word_pattern, options.highlight_priority, match_id)
+      return fn.matchadd(hl_group, word_pattern, config.options.highlight_priority, match_id)
     end)
 
     if registered_id == -1 then
@@ -238,10 +230,9 @@ function API.clear()
   HL.sweep()
 end
 
----@param user_options PluginOptions
-function API.setup(user_options)
-  user_options = user_options or {}
-  options = vim.tbl_deep_extend('force', config.default_options, user_options)
+---@param local_options PluginOptions
+function API.setup(local_options)
+  config.merge_options(local_options or {})
 
   M.initialize_highlight()
   math.randomseed(os.time())
@@ -265,7 +256,7 @@ function API.toggle()
 
   local word_pattern = ''
 
-  if is_visual_mode or not options.strict_word then
+  if is_visual_mode or not config.options.strict_word then
     word_pattern = letters.to_pattern(word)
   else
     word_pattern = letters.to_pattern('\\<' .. word .. '\\>')
