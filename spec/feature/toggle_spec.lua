@@ -1,8 +1,9 @@
 local helper = require('spec.helpers')
 local assert = helper.assert
-local prepare_words = helper.prepare_words
 local on_lc_word = helper.on_lc_word
 local on_uc_word = helper.on_uc_word
+local prepare_words = helper.prepare_words
+local wait_for = helper.wait_for
 
 -- / Method
 -- -------------------------------------------------------------------------------------------------
@@ -60,7 +61,7 @@ describe('API.toggle()', function()
       end)
 
       it('in visual mode (on)', function()
-        helper.wait_for(function ()
+        wait_for(function ()
           -- Arrange
           start_visual()
         end, function ()
@@ -77,7 +78,7 @@ describe('API.toggle()', function()
       end)
 
       it('in visual mode (off)', function()
-        helper.wait_for(function()
+        wait_for(function()
           -- Arrange
           sut()
           start_visual()
@@ -120,7 +121,7 @@ describe('API.toggle()', function()
       end)
 
       it('in visual mode (on)', function()
-        helper.wait_for(function ()
+        wait_for(function ()
           -- Arrange
           start_visual()
         end, function ()
@@ -137,7 +138,7 @@ describe('API.toggle()', function()
       end)
 
       it('in visual mode (off)', function()
-        helper.wait_for(function ()
+        wait_for(function ()
           -- Arrange
           sut()
           start_visual()
@@ -229,7 +230,7 @@ describe('API.toggle()', function()
       end)
 
       it('in visual mode (on)', function()
-        helper.wait_for(function ()
+        wait_for(function ()
           -- Arrange
           start_visual()
         end, function ()
@@ -246,7 +247,7 @@ describe('API.toggle()', function()
       end)
 
       it('in visual mode (off)', function()
-        helper.wait_for(function()
+        wait_for(function()
           -- Arrange
           sut()
           start_visual()
@@ -289,7 +290,7 @@ describe('API.toggle()', function()
       end)
 
       it('in visual mode (on)', function()
-        helper.wait_for(function ()
+        wait_for(function ()
           -- Arrange
           start_visual()
         end, function ()
@@ -306,7 +307,7 @@ describe('API.toggle()', function()
       end)
 
       it('in visual mode (off)', function()
-        helper.wait_for(function ()
+        wait_for(function ()
           -- Arrange
           sut()
           start_visual()
@@ -384,7 +385,7 @@ describe('API.toggle()', function()
       end)
 
       it('in visual mode (on)', function()
-        helper.wait_for(function ()
+        wait_for(function ()
           -- Arrange
           start_visual()
         end, function ()
@@ -401,7 +402,7 @@ describe('API.toggle()', function()
       end)
 
       it('in visual mode (off)', function()
-        helper.wait_for(function()
+        wait_for(function()
           -- Arrange
           sut()
           start_visual()
@@ -444,7 +445,7 @@ describe('API.toggle()', function()
       end)
 
       it('in visual mode (on)', function()
-        helper.wait_for(function ()
+        wait_for(function ()
           -- Arrange
           start_visual()
         end, function ()
@@ -461,7 +462,7 @@ describe('API.toggle()', function()
       end)
 
       it('in visual mode (off)', function()
-        helper.wait_for(function ()
+        wait_for(function ()
           -- Arrange
           sut()
           start_visual()

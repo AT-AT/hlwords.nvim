@@ -1,6 +1,7 @@
 local helper = require('spec.helpers')
 local assert = helper.assert
 local prepare_words = helper.prepare_words
+local wait_for = helper.wait_for
 
 -- / Module
 -- -------------------------------------------------------------------------------------------------
@@ -25,7 +26,7 @@ describe('Module.utils', function()
     end)
 
     it('changed by mode key', function ()
-      helper.wait_for(function ()
+      wait_for(function ()
         -- Arrange
         vim.api.nvim_feedkeys('v', 'x!', true)
       end, function ()
@@ -41,7 +42,7 @@ describe('Module.utils', function()
     end)
 
     it('changed by operator', function ()
-      helper.wait_for(function ()
+      wait_for(function ()
         -- Arrange
         prepare_words('foo')
         vim.api.nvim_feedkeys('viw', 'x!', true)
@@ -58,7 +59,7 @@ describe('Module.utils', function()
     end)
 
     it('changed by mode key and changed to v-block mode ', function ()
-      helper.wait_for(function ()
+      wait_for(function ()
         -- Arrange
         prepare_words('foo')
         vim.api.nvim_feedkeys('vll', 'x!', true)

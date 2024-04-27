@@ -1,5 +1,9 @@
 local helper = require('spec.helpers')
 local assert = helper.assert
+local extract_hldef = helper.extract_hldef
+local extract_match = helper.extract_match
+local plugin_name = helper.plugin_name
+local set_option = helper.set_option
 
 -- / Module
 -- -------------------------------------------------------------------------------------------------
@@ -68,7 +72,7 @@ describe('Module.highlight', function()
 
     sut_store = sut_module._records
     helper.set_plugin_name()
-    helper.set_option('random', false) -- Always should be sequencial in tests.
+    set_option('random', false) -- Always should be sequencial in tests.
   end)
 
   after_each(function()
@@ -84,36 +88,36 @@ describe('Module.highlight', function()
 
     it('no yet registered any plugin highlight definition', function ()
       -- Arrange
-      helper.set_option('colors', { { fg = 'none' } })
+      set_option('colors', { { fg = 'none' } })
 
       -- Act
       sut()
 
       -- Assert
-      local actual = helper.extract_hldef()
+      local actual = extract_hldef()
       assert.equals(1, vim.tbl_count(actual))
     end)
 
     it('after deleting highlight definitions that were already registered', function ()
       -- Arrange
-      helper.set_option('colors', { { fg = 'none' }, { fg = 'none' } })
+      set_option('colors', { { fg = 'none' }, { fg = 'none' } })
 
       -- Act
       sut()
 
       -- Assert
-      local actual = helper.extract_hldef()
+      local actual = extract_hldef()
       assert.equals(2, vim.tbl_count(actual))
 
       -- Arrange
       local first = actual[1]
-      helper.set_option('colors', { { fg = 'none' } })
+      set_option('colors', { { fg = 'none' } })
 
       -- Act
       sut()
 
       -- Assert
-      actual = helper.extract_hldef()
+      actual = extract_hldef()
       assert.equals(1, vim.tbl_count(actual))
       assert.equals(first, actual[1])
     end)
@@ -318,8 +322,8 @@ describe('Module.highlight', function()
 
     it('for specified record with passed word pattern', function ()
       -- Arrange
-      local hl_group_1 = helper.plugin_name .. '1'
-      local hl_group_2 = helper.plugin_name .. '2'
+      local hl_group_1 = plugin_name .. '1'
+      local hl_group_2 = plugin_name .. '2'
       local _, _, win_id_1, win_id_2 = prepare_stage()
       local target_record = to_record(hl_group_1, 'foo', 2000)
       local remained_record = to_record(hl_group_2, 'bar', 2001)
@@ -348,8 +352,8 @@ describe('Module.highlight', function()
 
     it('everything if no word pattern is passed', function ()
       -- Arrange
-      local hl_group_1 = helper.plugin_name .. '1'
-      local hl_group_2 = helper.plugin_name .. '2'
+      local hl_group_1 = plugin_name .. '1'
+      local hl_group_2 = plugin_name .. '2'
       local _, _, win_id_1, win_id_2 = prepare_stage()
       local record_1 = to_record(hl_group_1, 'foo', 2000)
       local record_2 = to_record(hl_group_2, 'bar', 2001)
@@ -386,7 +390,7 @@ describe('Module.highlight', function()
 
     it('can add match and record highlight usage for passed word pattern', function ()
       -- Arrange
-      local hl_group = helper.plugin_name .. '1'
+      local hl_group = plugin_name .. '1'
       local _, _, win_id_1, win_id_2 = prepare_stage()
       local initial_record = to_record(hl_group, nil, nil)
       push_record_store(initial_record)
@@ -395,7 +399,7 @@ describe('Module.highlight', function()
       sut('foo')
 
       -- Assert
-      local match_id = helper.extract_match(vim.fn.getmatches(), 'foo')[1].id
+      local match_id = extract_match(vim.fn.getmatches(), 'foo')[1].id
       local expected_store = to_record(hl_group, 'foo', match_id)
       assert.same(expected_store, sut_store)
 
@@ -408,7 +412,7 @@ describe('Module.highlight', function()
 
     it('can not apply hightlight if highlight color is not in stock', function ()
       -- Arrange
-      local hl_group = helper.plugin_name .. '1'
+      local hl_group = plugin_name .. '1'
       local _, _, win_id_1, win_id_2 = prepare_stage()
       local initial_record = to_record(hl_group, 'foo', 2000)
       push_record_store(initial_record)

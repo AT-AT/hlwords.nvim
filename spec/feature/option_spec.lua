@@ -1,7 +1,7 @@
 local helper = require('spec.helpers')
 local assert = helper.assert
-local prepare_words = helper.prepare_words
 local extract_match = helper.extract_match
+local prepare_words = helper.prepare_words
 
 -- / Method
 -- -------------------------------------------------------------------------------------------------

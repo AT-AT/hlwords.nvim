@@ -1,6 +1,7 @@
 local helper = require('spec.helpers')
 local assert = helper.assert
 local prepare_words = helper.prepare_words
+local wait_for = helper.wait_for
 
 -- / Module
 -- -------------------------------------------------------------------------------------------------
@@ -98,7 +99,7 @@ describe('Module.letters', function()
     end)
 
     it('selected by operator', function ()
-      helper.wait_for(function ()
+      wait_for(function ()
         -- Arrange
         prepare_words('foo')
         vim.api.nvim_feedkeys('viw', 'x!', true)
@@ -115,7 +116,7 @@ describe('Module.letters', function()
     end)
 
     it('selected by cursor', function ()
-      helper.wait_for(function ()
+      wait_for(function ()
         -- Arrange
         prepare_words('barfoobaz')
         vim.fn.setcursorcharpos(1, 4)
@@ -133,7 +134,7 @@ describe('Module.letters', function()
     end)
 
     it('selected by cursor in reverse order', function ()
-      helper.wait_for(function ()
+      wait_for(function ()
         -- Arrange
         prepare_words('barfoobaz')
         vim.fn.setcursorcharpos(1, 6)
@@ -151,7 +152,7 @@ describe('Module.letters', function()
     end)
 
     it('selected block-wise', function ()
-      helper.wait_for(function ()
+      wait_for(function ()
         -- Arrange
         prepare_words('foobar', 'bazqux')
         vim.api.nvim_feedkeys('vllj', 'x!', true)
