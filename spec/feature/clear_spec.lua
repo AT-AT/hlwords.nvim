@@ -13,9 +13,10 @@ describe('API.clear()', function()
   before_each(function()
     helper.cleanup_modules('hlwords')
     sut_module = require('hlwords')
+
+    helper.set_plugin_name() -- Must do before the highlight definition in setup.
     sut_module.setup()
     sut = sut_module.clear
-
     prepare_words()
   end)
 

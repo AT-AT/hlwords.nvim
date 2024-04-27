@@ -4,6 +4,8 @@ local say = require('say')
 
 local M = {}
 
+M.plugin_name = 'HlwordsTest'
+
 -- / Alias
 -- -------------------------------------------------------------------------------------------------
 
@@ -69,21 +71,46 @@ assert:register(
   'assertion.any_match.positive', 'assertion.any_match.negative'
 )
 
+-- / Utility (Environment)
+-- -------------------------------------------------------------------------------------------------
+
+function M.set_plugin_name()
+  require('hlwords.config').plugin_name = M.plugin_name
+  return M.plugin_name
+end
+
+function M.set_option(key, value)
+  require('hlwords.config').options[key] = value
+end
+
 -- / Utility (Arrangement)
 -- -------------------------------------------------------------------------------------------------
 
+-- NOTE: Explicitly pass the target (bag) because it will be used from a custom assertion.
 function M.extract_match(bag, pattern)
-  local group = 'Hlwords'
+  local hl_prefix = M.plugin_name
 
   return vim.tbl_filter(function(item)
     if pattern then
-      return vim.startswith(item.group, group) and item.pattern == pattern
+      return vim.startswith(item.group, hl_prefix) and item.pattern == pattern
     else
-      return vim.startswith(item.group, group)
+      return vim.startswith(item.group, hl_prefix)
     end
   end, bag)
 end
 
+function M.extract_hldef()
+  local hl_prefix = M.plugin_name
+  local hl_groups = vim.tbl_keys(vim.api.nvim_get_hl(0, {}))
+  local extracted = vim.tbl_filter(function (hl_group)
+    return vim.startswith(hl_group, hl_prefix)
+  end, hl_groups)
+  table.sort(extracted)
+
+  return extracted
+end
+
+-- NOTE: Implicitly refer to current buffer.
 function M.prepare_words(...)
   local words = { ... }
 
@@ -96,10 +123,12 @@ function M.prepare_words(...)
   end
 end
 
+-- NOTE: Implicitly refer to current buffer.
 function M.on_lc_word()
   vim.fn.setcursorcharpos(1, 1)
 end
 
+-- NOTE: Implicitly refer to current buffer.
 function M.on_uc_word()
   vim.fn.setcursorcharpos(2, 1)
 end

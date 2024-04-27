@@ -11,6 +11,8 @@ describe('Option:', function()
   before_each(function()
     helper.cleanup_modules('hlwords')
     sut_module = require('hlwords')
+
+    helper.set_plugin_name()
   end)
 
   after_each(function()
