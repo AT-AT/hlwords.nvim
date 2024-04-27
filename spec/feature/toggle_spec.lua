@@ -4,15 +4,15 @@ local prepare_words = helper.prepare_words
 local on_lc_word = helper.on_lc_word
 local on_uc_word = helper.on_uc_word
 
-local function start_visual()
-  vim.api.nvim_feedkeys('viw', 'x!', true)
-end
-
-  -- / Method
-  -- -----------------------------------------------------------------------------------------------
+-- / Method
+-- -------------------------------------------------------------------------------------------------
 describe('API.toggle()', function()
   local sut_module
   local sut
+
+  local function start_visual()
+    vim.api.nvim_feedkeys('viw', 'x!', true)
+  end
 
   before_each(function()
     helper.cleanup_modules('hlwords')
@@ -26,7 +26,7 @@ describe('API.toggle()', function()
   end)
 
   -- / Vim Option
-  -- ---------------------------------------------------------------------------------------------
+  -- -----------------------------------------------------------------------------------------------
   describe('with ignorecase=y, smartcase=y', function()
     before_each(function()
       vim.opt.ignorecase = true
@@ -34,7 +34,7 @@ describe('API.toggle()', function()
     end)
 
     -- / Word Type
-    -- -------------------------------------------------------------------------------------------
+    -- ---------------------------------------------------------------------------------------------
     describe('can switch highlight on lowercase word', function()
       before_each(function()
         prepare_words()
@@ -94,7 +94,7 @@ describe('API.toggle()', function()
     end) -- Word Type
 
     -- / Word Type
-    -- -------------------------------------------------------------------------------------------
+    -- ---------------------------------------------------------------------------------------------
     describe('can switch highlight on uppercase word', function()
       before_each(function()
         prepare_words()
@@ -154,7 +154,7 @@ describe('API.toggle()', function()
     end) -- Word Type
 
     -- / Multiple
-    -- -------------------------------------------------------------------------------------------
+    -- ---------------------------------------------------------------------------------------------
     describe('can switch highlight on strings with different case', function()
       before_each(function()
         prepare_words()
@@ -195,7 +195,7 @@ describe('API.toggle()', function()
   end) -- Vim Option
 
   -- / Vim Option
-  -- ---------------------------------------------------------------------------------------------
+  -- -----------------------------------------------------------------------------------------------
   describe('with ignorecase=y, smartcase=n', function()
     before_each(function()
       vim.opt.ignorecase = true
@@ -203,7 +203,7 @@ describe('API.toggle()', function()
     end)
 
     -- / Word Type
-    -- -------------------------------------------------------------------------------------------
+    -- ---------------------------------------------------------------------------------------------
     describe('can switch highlight on lowercase word', function()
       before_each(function()
         prepare_words()
@@ -263,7 +263,7 @@ describe('API.toggle()', function()
     end) -- Word Type
 
     -- / Word Type
-    -- -------------------------------------------------------------------------------------------
+    -- ---------------------------------------------------------------------------------------------
     describe('can switch highlight on uppercase word', function()
       before_each(function()
         prepare_words()
@@ -323,7 +323,7 @@ describe('API.toggle()', function()
     end) -- Word Type
 
     -- / Multiple
-    -- -------------------------------------------------------------------------------------------
+    -- ---------------------------------------------------------------------------------------------
     describe('can switch highlight on strings with different case', function()
       it('and always toggle both', function()
         -- Arrange
@@ -351,14 +351,14 @@ describe('API.toggle()', function()
   end) -- Vim Option
 
   -- / Vim Option
-  -- ---------------------------------------------------------------------------------------------
+  -- -----------------------------------------------------------------------------------------------
   describe('with ignorecase=n, smartcase=any', function()
     before_each(function()
       vim.opt.ignorecase = false
     end)
 
     -- / Word Type
-    -- -------------------------------------------------------------------------------------------
+    -- ---------------------------------------------------------------------------------------------
     describe('can switch highlight on lowercase word', function()
       before_each(function()
         prepare_words()
@@ -418,7 +418,7 @@ describe('API.toggle()', function()
     end) -- Word Type
 
     -- / Word Type
-    -- -------------------------------------------------------------------------------------------
+    -- ---------------------------------------------------------------------------------------------
     describe('can switch highlight on uppercase word', function()
       before_each(function()
         prepare_words()
@@ -478,7 +478,7 @@ describe('API.toggle()', function()
     end) -- Word Type
 
     -- / Multiple
-    -- -------------------------------------------------------------------------------------------
+    -- ---------------------------------------------------------------------------------------------
     describe('can switch highlight on strings with different case', function()
       it('and always toggle one side', function()
         -- Arrange

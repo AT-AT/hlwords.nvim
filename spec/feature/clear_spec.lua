@@ -4,8 +4,8 @@ local prepare_words = helper.prepare_words
 local on_lc_word = helper.on_lc_word
 local on_uc_word = helper.on_uc_word
 
-  -- / Method
-  -- -----------------------------------------------------------------------------------------------
+-- / Method
+-- -------------------------------------------------------------------------------------------------
 describe('API.clear()', function()
   local sut_module
   local sut
