@@ -1,6 +1,7 @@
 local helper = require('spec.helpers')
 local assert = helper.assert
 local prepare_words = helper.prepare_words
+local set_option = helper.set_option
 local wait_for = helper.wait_for
 
 -- / Subject
@@ -25,6 +26,18 @@ describe('Module.letters', function()
   describe('to_pattern() can apply pattern to text', function ()
     before_each(function ()
       sut = sut_module.to_pattern
+    end)
+
+    it('with applying word boundary#xxx', function ()
+      -- Arrange
+      vim.opt.ignorecase = false
+      set_option('strict_word', true)
+
+      -- Act
+      local actual = sut('foo')
+
+      -- Assert
+      assert.equals('\\C\\V\\<foo\\>', actual)
     end)
 
     describe('with ignorecase=y, smartcase=y', function ()
@@ -95,19 +108,15 @@ describe('Module.letters', function()
 
   -- / Function
   -- -----------------------------------------------------------------------------------------------
-  describe('retrieve() can get characters in visual mode', function ()
+  describe('retrieve() can get characters', function ()
     before_each(function ()
       sut = sut_module.retrieve
     end)
 
-    it('selected by operator', function ()
-      wait_for(function ()
+    describe('in normal mode', function ()
+      it('from word under cursor', function ()
         -- Arrange
         prepare_words('foo')
-        vim.api.nvim_feedkeys('viw', 'x!', true)
-      end, function ()
-        -- Assert
-        assert.equals('v', vim.fn.mode())
 
         -- Act
         local actual = sut()
@@ -115,58 +124,88 @@ describe('Module.letters', function()
         -- Assert
         assert.equals('foo', actual)
       end)
-    end)
 
-    it('selected by cursor', function ()
-      wait_for(function ()
+      it('as empty space if cursor is not over any word', function ()
         -- Arrange
-        prepare_words('barfoobaz')
-        vim.fn.setcursorcharpos(1, 4)
-        vim.api.nvim_feedkeys('vll', 'x!', true)
-      end, function ()
-        -- Assert
-        assert.equals('v', vim.fn.mode())
+        prepare_words(' ')
 
         -- Act
         local actual = sut()
 
         -- Assert
-        assert.equals('foo', actual)
+        assert.equals('', actual)
       end)
     end)
 
-    it('selected by cursor in reverse order', function ()
-      wait_for(function ()
-        -- Arrange
-        prepare_words('barfoobaz')
-        vim.fn.setcursorcharpos(1, 6)
-        vim.api.nvim_feedkeys('vhh', 'x!', true)
-      end, function ()
-        -- Assert
-        assert.equals('v', vim.fn.mode())
+    describe('in visual mode', function ()
+      it('selected by operator', function ()
+        wait_for(function ()
+          -- Arrange
+          prepare_words('foo')
+          vim.api.nvim_feedkeys('viw', 'x!', true)
+        end, function ()
+          -- Assert
+          assert.equals('v', vim.fn.mode())
 
-        -- Act
-        local actual = sut()
+          -- Act
+          local actual = sut()
 
-        -- Assert
-        assert.equals('foo', actual)
+          -- Assert
+          assert.equals('foo', actual)
+        end)
       end)
-    end)
 
-    it('selected block-wise', function ()
-      wait_for(function ()
-        -- Arrange
-        prepare_words('foobar', 'bazqux')
-        vim.api.nvim_feedkeys('vllj', 'x!', true)
-      end, function ()
-        -- Assert
-        assert.equals('v', vim.fn.mode())
+      it('selected by cursor', function ()
+        wait_for(function ()
+          -- Arrange
+          prepare_words('barfoobaz')
+          vim.fn.setcursorcharpos(1, 4)
+          vim.api.nvim_feedkeys('vll', 'x!', true)
+        end, function ()
+          -- Assert
+          assert.equals('v', vim.fn.mode())
 
-        -- Act
-        local actual = sut()
+          -- Act
+          local actual = sut()
 
-        -- Assert
-        assert.equals('foobar\\nbaz', actual)
+          -- Assert
+          assert.equals('foo', actual)
+        end)
+      end)
+
+      it('selected by cursor in reverse order', function ()
+        wait_for(function ()
+          -- Arrange
+          prepare_words('barfoobaz')
+          vim.fn.setcursorcharpos(1, 6)
+          vim.api.nvim_feedkeys('vhh', 'x!', true)
+        end, function ()
+          -- Assert
+          assert.equals('v', vim.fn.mode())
+
+          -- Act
+          local actual = sut()
+
+          -- Assert
+          assert.equals('foo', actual)
+        end)
+      end)
+
+      it('selected block-wise', function ()
+        wait_for(function ()
+          -- Arrange
+          prepare_words('foobar', 'bazqux')
+          vim.api.nvim_feedkeys('vllj', 'x!', true)
+        end, function ()
+          -- Assert
+          assert.equals('v', vim.fn.mode())
+
+          -- Act
+          local actual = sut()
+
+          -- Assert
+          assert.equals('foobar\\nbaz', actual)
+        end)
       end)
     end)
   end) -- Function

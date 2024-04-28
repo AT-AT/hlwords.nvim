@@ -8,12 +8,17 @@ local api = vim.api
 ---@see vim.fn
 local fn = vim.fn
 
+---@module 'hlwords.config'
+local config = require('hlwords.config')
+
+---@module 'hlwords.utils'
+local utils = require('hlwords.utils')
+
 
 -- =================================================================================================
 --  Namespace
 -- =================================================================================================
 
----@type { [string]: function }
 local M = {}
 
 
@@ -24,6 +29,7 @@ local M = {}
 ---@param target string
 ---@return string
 function M.to_pattern(target)
+  local is_visual_mode = utils.is_acceptable_vmode()
   local has_uppercase_letters = fn.match(target, '\\u') ~= -1
   local ignore_case = vim.api.nvim_get_option_value('ignorecase', {})
   local smart_case = vim.api.nvim_get_option_value('smartcase', {})
@@ -34,6 +40,10 @@ function M.to_pattern(target)
   -- registered, generate a pattern using lowercase letters if possible.
   if ignore_case and (not smart_case) then
     text = string.lower(text)
+  end
+
+  if not is_visual_mode and config.options.strict_word then
+    text = '\\<' .. text .. '\\>'
   end
 
   -- Depending on the values of "case" related options and the contents of the target string, use
@@ -49,11 +59,16 @@ end
 
 ---@return string
 ---
---- This method only accepts "v" (Visual, includes using operators like as "viw") or "^V" (V-Block),
---- not "V" (V-Line).<br>
 --- TODO: After "getregion()" is merged, refactor using it. And once it's merged and sufficient
 ---       functionality is implemented, "vim.region" will be deprecated and will not be used.
 function M.retrieve()
+  -- In visual mode, only accepts Visual ("v", "viw") or V-Block ("^V"), not V-Line ("V").
+  local is_visual_mode = utils.is_acceptable_vmode()
+
+  if not is_visual_mode then
+    return fn.expand('<cword>')
+  end
+
   local start_row, start_col = fn.getpos('v')[2], fn.getpos('v')[3]
   local end_row, end_col = fn.getpos('.')[2], fn.getpos('.')[3]
 
@@ -82,11 +97,9 @@ function M.retrieve()
     return ''
   end
 
-  local text = table.concat(vim.tbl_map(function(line)
+  return table.concat(vim.tbl_map(function(line)
     return fn.escape(line, '\\')
   end, lines), '\\n')
-
-  return text
 end
 
 

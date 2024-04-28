@@ -5,9 +5,6 @@
 ---@see vim.api
 local api = vim.api
 
----@see vim.fn
-local fn = vim.fn
-
 ---@module 'hlwords.config'
 local config = require('hlwords.config')
 
@@ -16,9 +13,6 @@ local letters = require('hlwords.letters')
 
 ---@module 'hlwords.highlight'
 local highlight = require('hlwords.highlight')
-
----@module 'hlwords.utils'
-local utils = require('hlwords.utils')
 
 
 -- =================================================================================================
@@ -56,28 +50,13 @@ function API.setup(local_options)
 end
 
 function API.toggle()
-  -- Only accepts "v" (Visual, includes like as "viw") or "^V" (V-Block), not "V" (V-Line).
-  local is_visual_mode = utils.is_acceptable_vmode()
-
-  local word = ''
-
-  if is_visual_mode then
-    word = letters.retrieve()
-  else
-    word = fn.expand('<cword>')
-  end
+  local word = letters.retrieve()
 
   if #word == 0 then
     return
   end
 
-  local word_pattern = ''
-
-  if is_visual_mode or not config.options.strict_word then
-    word_pattern = letters.to_pattern(word)
-  else
-    word_pattern = letters.to_pattern('\\<' .. word .. '\\>')
-  end
+  local word_pattern = letters.to_pattern(word)
 
   if highlight.is_used_for(word_pattern) then
     highlight.off(word_pattern)
