@@ -133,17 +133,17 @@ end
 -- -------------------------------------------------------------------------------------------------
 
 function M.define()
+  local hl_group_prefix = config.plugin_name
   local current_hl_groups = api.nvim_get_hl(0, {})
-  local name = config.plugin_name
 
   for hl_group, _ in pairs(current_hl_groups) do
-    if vim.startswith(hl_group, name) then
+    if vim.startswith(hl_group, hl_group_prefix) then
       vim.cmd('highlight clear ' .. hl_group)
     end
   end
 
   for index, color_table in pairs(config.options.colors) do
-    local hl_group = config.plugin_name .. string.format('%05d', index)
+    local hl_group = hl_group_prefix .. string.format('%05d', index)
     api.nvim_set_hl(0, hl_group, color_table)
     M.register(hl_group)
   end
@@ -192,14 +192,17 @@ function M.on(word_pattern)
 
   local match_id = -1
   local wins = api.nvim_list_wins()
+  local priority = config.options.highlight_priority
 
   for _, win_id in pairs(wins) do
     local registered_id = api.nvim_win_call(win_id, function()
-      return fn.matchadd(hl_group, word_pattern, config.options.highlight_priority, match_id)
+      return fn.matchadd(hl_group, word_pattern, priority, match_id)
     end)
 
     if registered_id == -1 then
-      utils.fail('Unable to add match "' .. word_pattern .. '" in window (id=' .. win_id .. ').')
+      utils.fail(string.format(
+        'Unable to add match "%s" in window (id=%d).', tostring(word_pattern), win_id
+      ))
     else
       match_id = registered_id
     end
