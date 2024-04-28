@@ -110,6 +110,36 @@ function M.extract_hldef()
   return extracted
 end
 
+function M.prepare_stage()
+  -- First, there is a buffer and a window to display it.
+  local buf1 = vim.api.nvim_get_current_buf()
+  local win1 = vim.api.nvim_get_current_win()
+
+  -- If a new buffer is created here, the current buffer will not change.
+  local buf2 = vim.api.nvim_create_buf(true, false)
+
+  -- In the version at the time of creation, nvim_open_win was unable to create a normal window.
+  vim.cmd('vsplit')
+
+  -- If a new window is created here, the current window will change to the new one.
+  local win2 = vim.api.nvim_get_current_win()
+
+  vim.api.nvim_win_set_buf(win2, buf2)
+  vim.api.nvim_set_current_win(win1)
+
+  local function append()
+    vim.cmd('vsplit')
+    local win3 = vim.api.nvim_get_current_win()
+    local buf3 = vim.api.nvim_create_buf(true, false)
+    vim.api.nvim_win_set_buf(win3, buf3)
+    vim.api.nvim_set_current_win(win1)
+
+    return buf3, win3
+  end
+
+  return buf1, buf2, win1, win2, append
+end
+
 -- NOTE: Implicitly refer to current buffer.
 function M.prepare_words(...)
   local words = { ... }
@@ -131,6 +161,10 @@ end
 -- NOTE: Implicitly refer to current buffer.
 function M.on_uc_word()
   vim.fn.setcursorcharpos(2, 1)
+end
+
+function M.move_to_win(win_id)
+  vim.api.nvim_set_current_win(win_id)
 end
 
 -- / Utility (Runner)

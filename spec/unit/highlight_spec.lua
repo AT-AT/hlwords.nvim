@@ -2,6 +2,8 @@ local helper = require('spec.helpers')
 local assert = helper.assert
 local extract_hldef = helper.extract_hldef
 local extract_match = helper.extract_match
+local move_to_win = helper.move_to_win
+local prepare_stage = helper.prepare_stage
 local plugin_name = helper.plugin_name
 local set_option = helper.set_option
 
@@ -34,28 +36,6 @@ describe('Module.highlight', function()
     local spec = record[hl_group]
 
     vim.fn.matchadd(hl_group, spec.word_pattern, 10, spec.match_id, { window = win_id })
-  end
-
-  local function prepare_stage()
-    -- First, there is a buffer and a window to display it.
-    -- helper.dump(vim.api.nvim_list_bufs())
-    -- helper.dump(vim.api.nvim_list_wins())
-    local buf1 = vim.api.nvim_get_current_buf()
-    local win1 = vim.api.nvim_get_current_win()
-
-    -- If a new buffer is created here, the current buffer will not change.
-    local buf2 = vim.api.nvim_create_buf(true, false)
-
-    -- In the version at the time of creation, nvim_open_win was unable to create a normal window.
-    vim.cmd('vsplit')
-
-    -- If a new window is created here, the current window will change to the new one.
-    local win2 = vim.api.nvim_get_current_win()
-
-    vim.api.nvim_win_set_buf(win2, buf2)
-    vim.api.nvim_set_current_win(win1)
-
-    return buf1, buf2, win1, win2
   end
 
   setup(function()
@@ -343,7 +323,7 @@ describe('Module.highlight', function()
       assert.same(expected_store, sut_store)
 
       for _, win_id in pairs({ win_id_1, win_id_2 }) do
-        vim.api.nvim_set_current_win(win_id)
+        move_to_win(win_id)
         local matches = vim.fn.getmatches()
         assert.has_match_not(matches, 'foo')
         assert.has_match(matches, 'bar')
@@ -374,7 +354,7 @@ describe('Module.highlight', function()
       assert.same(expected_store, sut_store)
 
       for _, win_id in pairs({ win_id_1, win_id_2 }) do
-        vim.api.nvim_set_current_win(win_id)
+        move_to_win(win_id)
         local matches = vim.fn.getmatches()
         assert.any_match_not(matches)
       end
@@ -404,7 +384,7 @@ describe('Module.highlight', function()
       assert.same(expected_store, sut_store)
 
       for _, win_id in pairs({ win_id_1, win_id_2 }) do
-        vim.api.nvim_set_current_win(win_id)
+        move_to_win(win_id)
         local matches = vim.fn.getmatches()
         assert.has_match(matches, 'foo')
       end
@@ -426,7 +406,7 @@ describe('Module.highlight', function()
       assert.same(initial_record, sut_store)
 
       for _, win_id in pairs({ win_id_1, win_id_2 }) do
-        vim.api.nvim_set_current_win(win_id)
+        move_to_win(win_id)
         local matches = vim.fn.getmatches()
         assert.only_match(matches, 'foo')
       end
