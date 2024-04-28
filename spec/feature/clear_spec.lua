@@ -1,11 +1,11 @@
 local helper = require('spec.helpers')
 local assert = helper.assert
-local prepare_words = helper.prepare_words
 local on_lc_word = helper.on_lc_word
 local on_uc_word = helper.on_uc_word
+local prepare_words = helper.prepare_words
 
-  -- / Method
-  -- -----------------------------------------------------------------------------------------------
+-- / Subject
+-- -------------------------------------------------------------------------------------------------
 describe('API.clear()', function()
   local sut_module
   local sut
@@ -13,9 +13,11 @@ describe('API.clear()', function()
   before_each(function()
     helper.cleanup_modules('hlwords')
     sut_module = require('hlwords')
+
+    helper.event_emission(false)
+    helper.set_plugin_name() -- Must do before the highlight definition in setup.
     sut_module.setup()
     sut = sut_module.clear
-
     prepare_words()
   end)
 

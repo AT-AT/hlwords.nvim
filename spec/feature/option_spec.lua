@@ -1,16 +1,19 @@
 local helper = require('spec.helpers')
 local assert = helper.assert
-local prepare_words = helper.prepare_words
 local extract_match = helper.extract_match
+local prepare_words = helper.prepare_words
 
-  -- / Method
-  -- -----------------------------------------------------------------------------------------------
+-- / Subject
+-- -------------------------------------------------------------------------------------------------
 describe('Option:', function()
   local sut_module
 
   before_each(function()
     helper.cleanup_modules('hlwords')
     sut_module = require('hlwords')
+
+    helper.event_emission(false)
+    helper.set_plugin_name()
   end)
 
   after_each(function()
@@ -27,7 +30,7 @@ describe('Option:', function()
 
       -- Act
       for row_num = 1, 4 do
-        vim.fn.setcursorcharpos(row_num, 1)
+        vim.api.nvim_win_set_cursor(0, { row_num, 0 })
         toggle()
       end
 

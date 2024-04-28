@@ -1,22 +1,26 @@
 local helper = require('spec.helpers')
 local assert = helper.assert
-local prepare_words = helper.prepare_words
 local on_lc_word = helper.on_lc_word
 local on_uc_word = helper.on_uc_word
+local prepare_words = helper.prepare_words
+local wait_for = helper.wait_for
 
-local function start_visual()
-  vim.api.nvim_feedkeys('viw', 'x!', true)
-end
-
-  -- / Method
-  -- -----------------------------------------------------------------------------------------------
+-- / Subject
+-- -------------------------------------------------------------------------------------------------
 describe('API.toggle()', function()
   local sut_module
   local sut
 
+  local function start_visual()
+    vim.api.nvim_feedkeys('viw', 'x!', true)
+  end
+
   before_each(function()
     helper.cleanup_modules('hlwords')
     sut_module = require('hlwords')
+
+    helper.event_emission(false)
+    helper.set_plugin_name() -- Must do before the highlight definition in setup.
     sut_module.setup()
     sut = sut_module.toggle
   end)
@@ -26,7 +30,7 @@ describe('API.toggle()', function()
   end)
 
   -- / Vim Option
-  -- ---------------------------------------------------------------------------------------------
+  -- -----------------------------------------------------------------------------------------------
   describe('with ignorecase=y, smartcase=y', function()
     before_each(function()
       vim.opt.ignorecase = true
@@ -34,7 +38,7 @@ describe('API.toggle()', function()
     end)
 
     -- / Word Type
-    -- -------------------------------------------------------------------------------------------
+    -- ---------------------------------------------------------------------------------------------
     describe('can switch highlight on lowercase word', function()
       before_each(function()
         prepare_words()
@@ -58,12 +62,12 @@ describe('API.toggle()', function()
       end)
 
       it('in visual mode (on)', function()
-        helper.wait_for(function ()
+        wait_for(function ()
           -- Arrange
           start_visual()
         end, function ()
           -- Assert
-          assert.equals('v', vim.fn.mode())
+          assert.equals('v', vim.api.nvim_get_mode().mode)
 
           -- Act
           sut()
@@ -75,13 +79,13 @@ describe('API.toggle()', function()
       end)
 
       it('in visual mode (off)', function()
-        helper.wait_for(function()
+        wait_for(function()
           -- Arrange
           sut()
           start_visual()
         end, function()
           -- Assert
-          assert.equals('v', vim.fn.mode())
+          assert.equals('v', vim.api.nvim_get_mode().mode)
 
           -- Act
           sut()
@@ -94,7 +98,7 @@ describe('API.toggle()', function()
     end) -- Word Type
 
     -- / Word Type
-    -- -------------------------------------------------------------------------------------------
+    -- ---------------------------------------------------------------------------------------------
     describe('can switch highlight on uppercase word', function()
       before_each(function()
         prepare_words()
@@ -118,12 +122,12 @@ describe('API.toggle()', function()
       end)
 
       it('in visual mode (on)', function()
-        helper.wait_for(function ()
+        wait_for(function ()
           -- Arrange
           start_visual()
         end, function ()
           -- Assert
-          assert.equals('v', vim.fn.mode())
+          assert.equals('v', vim.api.nvim_get_mode().mode)
 
           -- Act
           sut()
@@ -135,13 +139,13 @@ describe('API.toggle()', function()
       end)
 
       it('in visual mode (off)', function()
-        helper.wait_for(function ()
+        wait_for(function ()
           -- Arrange
           sut()
           start_visual()
         end, function ()
           -- Assert
-          assert.equals('v', vim.fn.mode())
+          assert.equals('v', vim.api.nvim_get_mode().mode)
 
           -- Act
           sut()
@@ -154,7 +158,7 @@ describe('API.toggle()', function()
     end) -- Word Type
 
     -- / Multiple
-    -- -------------------------------------------------------------------------------------------
+    -- ---------------------------------------------------------------------------------------------
     describe('can switch highlight on strings with different case', function()
       before_each(function()
         prepare_words()
@@ -195,7 +199,7 @@ describe('API.toggle()', function()
   end) -- Vim Option
 
   -- / Vim Option
-  -- ---------------------------------------------------------------------------------------------
+  -- -----------------------------------------------------------------------------------------------
   describe('with ignorecase=y, smartcase=n', function()
     before_each(function()
       vim.opt.ignorecase = true
@@ -203,7 +207,7 @@ describe('API.toggle()', function()
     end)
 
     -- / Word Type
-    -- -------------------------------------------------------------------------------------------
+    -- ---------------------------------------------------------------------------------------------
     describe('can switch highlight on lowercase word', function()
       before_each(function()
         prepare_words()
@@ -227,12 +231,12 @@ describe('API.toggle()', function()
       end)
 
       it('in visual mode (on)', function()
-        helper.wait_for(function ()
+        wait_for(function ()
           -- Arrange
           start_visual()
         end, function ()
           -- Assert
-          assert.equals('v', vim.fn.mode())
+          assert.equals('v', vim.api.nvim_get_mode().mode)
 
           -- Act
           sut()
@@ -244,13 +248,13 @@ describe('API.toggle()', function()
       end)
 
       it('in visual mode (off)', function()
-        helper.wait_for(function()
+        wait_for(function()
           -- Arrange
           sut()
           start_visual()
         end, function()
           -- Assert
-          assert.equals('v', vim.fn.mode())
+          assert.equals('v', vim.api.nvim_get_mode().mode)
 
           -- Act
           sut()
@@ -263,7 +267,7 @@ describe('API.toggle()', function()
     end) -- Word Type
 
     -- / Word Type
-    -- -------------------------------------------------------------------------------------------
+    -- ---------------------------------------------------------------------------------------------
     describe('can switch highlight on uppercase word', function()
       before_each(function()
         prepare_words()
@@ -287,12 +291,12 @@ describe('API.toggle()', function()
       end)
 
       it('in visual mode (on)', function()
-        helper.wait_for(function ()
+        wait_for(function ()
           -- Arrange
           start_visual()
         end, function ()
           -- Assert
-          assert.equals('v', vim.fn.mode())
+          assert.equals('v', vim.api.nvim_get_mode().mode)
 
           -- Act
           sut()
@@ -304,13 +308,13 @@ describe('API.toggle()', function()
       end)
 
       it('in visual mode (off)', function()
-        helper.wait_for(function ()
+        wait_for(function ()
           -- Arrange
           sut()
           start_visual()
         end, function ()
           -- Assert
-          assert.equals('v', vim.fn.mode())
+          assert.equals('v', vim.api.nvim_get_mode().mode)
 
           -- Act
           sut()
@@ -323,7 +327,7 @@ describe('API.toggle()', function()
     end) -- Word Type
 
     -- / Multiple
-    -- -------------------------------------------------------------------------------------------
+    -- ---------------------------------------------------------------------------------------------
     describe('can switch highlight on strings with different case', function()
       it('and always toggle both', function()
         -- Arrange
@@ -351,14 +355,14 @@ describe('API.toggle()', function()
   end) -- Vim Option
 
   -- / Vim Option
-  -- ---------------------------------------------------------------------------------------------
+  -- -----------------------------------------------------------------------------------------------
   describe('with ignorecase=n, smartcase=any', function()
     before_each(function()
       vim.opt.ignorecase = false
     end)
 
     -- / Word Type
-    -- -------------------------------------------------------------------------------------------
+    -- ---------------------------------------------------------------------------------------------
     describe('can switch highlight on lowercase word', function()
       before_each(function()
         prepare_words()
@@ -382,12 +386,12 @@ describe('API.toggle()', function()
       end)
 
       it('in visual mode (on)', function()
-        helper.wait_for(function ()
+        wait_for(function ()
           -- Arrange
           start_visual()
         end, function ()
           -- Assert
-          assert.equals('v', vim.fn.mode())
+          assert.equals('v', vim.api.nvim_get_mode().mode)
 
           -- Act
           sut()
@@ -399,13 +403,13 @@ describe('API.toggle()', function()
       end)
 
       it('in visual mode (off)', function()
-        helper.wait_for(function()
+        wait_for(function()
           -- Arrange
           sut()
           start_visual()
         end, function()
           -- Assert
-          assert.equals('v', vim.fn.mode())
+          assert.equals('v', vim.api.nvim_get_mode().mode)
 
           -- Act
           sut()
@@ -418,7 +422,7 @@ describe('API.toggle()', function()
     end) -- Word Type
 
     -- / Word Type
-    -- -------------------------------------------------------------------------------------------
+    -- ---------------------------------------------------------------------------------------------
     describe('can switch highlight on uppercase word', function()
       before_each(function()
         prepare_words()
@@ -442,12 +446,12 @@ describe('API.toggle()', function()
       end)
 
       it('in visual mode (on)', function()
-        helper.wait_for(function ()
+        wait_for(function ()
           -- Arrange
           start_visual()
         end, function ()
           -- Assert
-          assert.equals('v', vim.fn.mode())
+          assert.equals('v', vim.api.nvim_get_mode().mode)
 
           -- Act
           sut()
@@ -459,13 +463,13 @@ describe('API.toggle()', function()
       end)
 
       it('in visual mode (off)', function()
-        helper.wait_for(function ()
+        wait_for(function ()
           -- Arrange
           sut()
           start_visual()
         end, function ()
           -- Assert
-          assert.equals('v', vim.fn.mode())
+          assert.equals('v', vim.api.nvim_get_mode().mode)
 
           -- Act
           sut()
@@ -478,7 +482,7 @@ describe('API.toggle()', function()
     end) -- Word Type
 
     -- / Multiple
-    -- -------------------------------------------------------------------------------------------
+    -- ---------------------------------------------------------------------------------------------
     describe('can switch highlight on strings with different case', function()
       it('and always toggle one side', function()
         -- Arrange

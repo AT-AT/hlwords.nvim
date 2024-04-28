@@ -10,6 +10,7 @@ Contents                                                    *hlwords-contents*
 3. Lua Module(API) ...................................... |hlwords-lua-module|
   - hlwords ..................................... |hlwords-lua-module-hlwords|
 4. Behavior ............................................... |hlwords-behavior|
+5. Testing ................................................. |hlwords-testing|
 
 
 ==============================================================================
@@ -191,6 +192,17 @@ highlight, and "{}" represents another highlight.
 
     f|oo --(toggle)--> [f|oo] (cursor->Foo) [foo] ------------> [foo]
     Foo  ------------> Foo    ------------- F|oo  --(toggle)--> {F|oo}
+
+
+==============================================================================
+5. Testing                                                   *hlwords-testing*
+
+
+Install Lua-5.1
+Install LuaRocks
+Install busted (global, https://github.com/lunarmodules/busted)
+Install vusted (global, https://github.com/notomo/vusted)
+Run vusted
 
 
 ==============================================================================
