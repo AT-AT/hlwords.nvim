@@ -296,6 +296,58 @@ describe('Module.highlight', function()
 
   -- / Function
   -- -----------------------------------------------------------------------------------------------
+  describe('apply() can add matches', function ()
+    before_each(function ()
+      sut = sut_module.apply
+    end)
+
+    it('to new window', function ()
+      -- Arrange
+      local hl_group_1 = plugin_name .. '1'
+      local hl_group_2 = plugin_name .. '2'
+      local _, _, _, win_id = prepare_stage()
+      local unused_record = to_record(hl_group_1, 'foo', 2000)
+      local used_record = to_record(hl_group_2, nil, nil)
+      push_record_store(unused_record)
+      push_record_store(used_record)
+      move_to_win(win_id)
+
+      -- Assert
+      local matches = vim.fn.getmatches()
+      assert.any_match_not(matches)
+
+      -- Act
+      sut(win_id)
+
+      -- Assert
+      matches = vim.fn.getmatches()
+      assert.only_match(matches, 'foo')
+    end)
+
+    it('to any window which already has matches without errors.', function ()
+      -- Arrange
+      local hl_group_1 = plugin_name .. '1'
+      local _, _, _, win_id = prepare_stage()
+      local unused_record = to_record(hl_group_1, 'foo', 2000)
+      push_record_store(unused_record)
+      add_match(unused_record, win_id)
+      move_to_win(win_id)
+
+      -- Assert
+      local matches = vim.fn.getmatches()
+      assert.has_match(matches, 'foo')
+
+      -- Act
+      sut(win_id)
+
+      -- Assert
+      matches = vim.fn.getmatches()
+      assert.has_match(matches, 'foo')
+    end)
+  end)
+
+  -- / Function
+  -- -----------------------------------------------------------------------------------------------
   describe('off() can clear matches and highlight usage', function ()
     before_each(function ()
       sut = sut_module.off

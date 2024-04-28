@@ -41,6 +41,18 @@ function API.setup(local_options)
   config.merge_options(local_options or {})
   highlight.define()
   math.randomseed(os.time())
+
+  -- Note that even if use "WinNew" event, it's difficult to identify the newly added window, so use
+  -- "WinEnter" event to process each time.
+  --   https://github.com/neovim/neovim/issues/25844
+  --   https://github.com/neovim/neovim/issues/23581
+  api.nvim_create_autocmd({ 'WinEnter' }, {
+    group = api.nvim_create_augroup(config.plugin_name .. 'AutoCmd', {}),
+    callback = function(_)
+      local win_id = api.nvim_get_current_win()
+      highlight.apply(win_id)
+    end,
+  })
 end
 
 function API.toggle()

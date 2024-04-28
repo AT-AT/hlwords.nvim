@@ -132,6 +132,34 @@ end
 -- / Match Manipulation
 -- -------------------------------------------------------------------------------------------------
 
+---@param win_id integer
+function M.apply(win_id)
+  local hl_group_prefix = config.plugin_name
+  local priority = config.options.highlight_priority
+
+  api.nvim_win_call(win_id, function()
+    local matches = vim.tbl_filter(function(item)
+      return vim.startswith(item.group, hl_group_prefix)
+    end, fn.getmatches())
+
+    matches = vim.tbl_map(function(item)
+      return item.group
+    end, matches)
+
+    for hl_group, spec in pairs(records) do
+      if spec.match_id ~= nil and not vim.tbl_contains(matches, hl_group) then
+        local result = fn.matchadd(hl_group, spec.word_pattern, priority, spec.match_id)
+
+        if result == -1 then
+          utils.fail(string.format(
+            'Unable to add match "%s" in window (id=%d).', tostring(spec.word_pattern), win_id
+          ))
+        end
+      end
+    end
+  end)
+end
+
 function M.define()
   local hl_group_prefix = config.plugin_name
   local current_hl_groups = api.nvim_get_hl(0, {})
