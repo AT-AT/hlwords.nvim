@@ -67,7 +67,7 @@ describe('API.toggle()', function()
           start_visual()
         end, function ()
           -- Assert
-          assert.equals('v', vim.fn.mode())
+          assert.equals('v', vim.api.nvim_get_mode().mode)
 
           -- Act
           sut()
@@ -85,7 +85,7 @@ describe('API.toggle()', function()
           start_visual()
         end, function()
           -- Assert
-          assert.equals('v', vim.fn.mode())
+          assert.equals('v', vim.api.nvim_get_mode().mode)
 
           -- Act
           sut()
@@ -127,7 +127,7 @@ describe('API.toggle()', function()
           start_visual()
         end, function ()
           -- Assert
-          assert.equals('v', vim.fn.mode())
+          assert.equals('v', vim.api.nvim_get_mode().mode)
 
           -- Act
           sut()
@@ -145,7 +145,7 @@ describe('API.toggle()', function()
           start_visual()
         end, function ()
           -- Assert
-          assert.equals('v', vim.fn.mode())
+          assert.equals('v', vim.api.nvim_get_mode().mode)
 
           -- Act
           sut()
@@ -236,7 +236,7 @@ describe('API.toggle()', function()
           start_visual()
         end, function ()
           -- Assert
-          assert.equals('v', vim.fn.mode())
+          assert.equals('v', vim.api.nvim_get_mode().mode)
 
           -- Act
           sut()
@@ -254,7 +254,7 @@ describe('API.toggle()', function()
           start_visual()
         end, function()
           -- Assert
-          assert.equals('v', vim.fn.mode())
+          assert.equals('v', vim.api.nvim_get_mode().mode)
 
           -- Act
           sut()
@@ -296,7 +296,7 @@ describe('API.toggle()', function()
           start_visual()
         end, function ()
           -- Assert
-          assert.equals('v', vim.fn.mode())
+          assert.equals('v', vim.api.nvim_get_mode().mode)
 
           -- Act
           sut()
@@ -314,7 +314,7 @@ describe('API.toggle()', function()
           start_visual()
         end, function ()
           -- Assert
-          assert.equals('v', vim.fn.mode())
+          assert.equals('v', vim.api.nvim_get_mode().mode)
 
           -- Act
           sut()
@@ -391,7 +391,7 @@ describe('API.toggle()', function()
           start_visual()
         end, function ()
           -- Assert
-          assert.equals('v', vim.fn.mode())
+          assert.equals('v', vim.api.nvim_get_mode().mode)
 
           -- Act
           sut()
@@ -409,7 +409,7 @@ describe('API.toggle()', function()
           start_visual()
         end, function()
           -- Assert
-          assert.equals('v', vim.fn.mode())
+          assert.equals('v', vim.api.nvim_get_mode().mode)
 
           -- Act
           sut()
@@ -451,7 +451,7 @@ describe('API.toggle()', function()
           start_visual()
         end, function ()
           -- Assert
-          assert.equals('v', vim.fn.mode())
+          assert.equals('v', vim.api.nvim_get_mode().mode)
 
           -- Act
           sut()
@@ -469,7 +469,7 @@ describe('API.toggle()', function()
           start_visual()
         end, function ()
           -- Assert
-          assert.equals('v', vim.fn.mode())
+          assert.equals('v', vim.api.nvim_get_mode().mode)
 
           -- Act
           sut()

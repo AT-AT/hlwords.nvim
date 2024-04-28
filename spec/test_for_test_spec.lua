@@ -42,7 +42,7 @@ describe('Test for test:', function()
       -- subsequent tests. Note that the "!" option here is used to continue insert mode.
       vim.api.nvim_feedkeys('v', 'x!', true)
     end, function ()
-      assert.equals('v', vim.fn.mode())
+      assert.equals('v', vim.api.nvim_get_mode().mode)
 
       -- SHOULD use Lua API nvim_feedkeys() instead of the native function.
       --   https://vim-jp.org/vimdoc-ja/builtin.html#feedkeys()
@@ -60,7 +60,7 @@ describe('Test for test:', function()
         vim.api.nvim_replace_termcodes('ifoo<Esc>', true, false, true), 'x', false
       )
     end, function ()
-      assert.equals('foo', vim.fn.getline(1))
+      assert.equals('foo', vim.api.nvim_buf_get_lines(0, 0, 1, true)[1])
     end)
   end)
 
@@ -71,7 +71,7 @@ describe('Test for test:', function()
       -- Since "<leader>" itself is NOT "special keys", just write the default key ("\").
       vim.api.nvim_feedkeys('\\b', 'mx', true)
     end, function ()
-      assert.equals('bar', vim.fn.getline(1))
+      assert.equals('bar', vim.api.nvim_buf_get_lines(0, 0, 1, true)[1])
     end)
   end)
 end)

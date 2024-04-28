@@ -168,19 +168,18 @@ function M.prepare_words(...)
     words = { 'foo', 'Foo' }
   end
 
-  for row_num, word in ipairs(words) do
-    vim.fn.setline(row_num, word)
-  end
+  vim.api.nvim_buf_set_lines(0, 0, 0, true, words)
+  vim.api.nvim_win_set_cursor(0, { 1, 0 })
 end
 
 -- NOTE: Implicitly refer to current buffer.
 function M.on_lc_word()
-  vim.fn.setcursorcharpos(1, 1)
+  vim.api.nvim_win_set_cursor(0, { 1, 0 })
 end
 
 -- NOTE: Implicitly refer to current buffer.
 function M.on_uc_word()
-  vim.fn.setcursorcharpos(2, 1)
+  vim.api.nvim_win_set_cursor(0, { 2, 0 })
 end
 
 function M.move_to_win(win_id)

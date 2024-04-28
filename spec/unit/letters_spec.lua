@@ -28,7 +28,7 @@ describe('Module.letters', function()
       sut = sut_module.to_pattern
     end)
 
-    it('with applying word boundary#xxx', function ()
+    it('with applying word boundary', function ()
       -- Arrange
       vim.opt.ignorecase = false
       set_option('strict_word', true)
@@ -145,7 +145,7 @@ describe('Module.letters', function()
           vim.api.nvim_feedkeys('viw', 'x!', true)
         end, function ()
           -- Assert
-          assert.equals('v', vim.fn.mode())
+          assert.equals('v', vim.api.nvim_get_mode().mode)
 
           -- Act
           local actual = sut()
@@ -159,11 +159,11 @@ describe('Module.letters', function()
         wait_for(function ()
           -- Arrange
           prepare_words('barfoobaz')
-          vim.fn.setcursorcharpos(1, 4)
+          vim.api.nvim_win_set_cursor(0, { 1, 3 })
           vim.api.nvim_feedkeys('vll', 'x!', true)
         end, function ()
           -- Assert
-          assert.equals('v', vim.fn.mode())
+          assert.equals('v', vim.api.nvim_get_mode().mode)
 
           -- Act
           local actual = sut()
@@ -177,11 +177,11 @@ describe('Module.letters', function()
         wait_for(function ()
           -- Arrange
           prepare_words('barfoobaz')
-          vim.fn.setcursorcharpos(1, 6)
+          vim.api.nvim_win_set_cursor(0, { 1, 5 })
           vim.api.nvim_feedkeys('vhh', 'x!', true)
         end, function ()
           -- Assert
-          assert.equals('v', vim.fn.mode())
+          assert.equals('v', vim.api.nvim_get_mode().mode)
 
           -- Act
           local actual = sut()
@@ -198,7 +198,7 @@ describe('Module.letters', function()
           vim.api.nvim_feedkeys('vllj', 'x!', true)
         end, function ()
           -- Assert
-          assert.equals('v', vim.fn.mode())
+          assert.equals('v', vim.api.nvim_get_mode().mode)
 
           -- Act
           local actual = sut()

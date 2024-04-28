@@ -30,7 +30,7 @@ describe('Option:', function()
 
       -- Act
       for row_num = 1, 4 do
-        vim.fn.setcursorcharpos(row_num, 1)
+        vim.api.nvim_win_set_cursor(0, { row_num, 0 })
         toggle()
       end
 

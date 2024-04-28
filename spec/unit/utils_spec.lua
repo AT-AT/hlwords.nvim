@@ -33,7 +33,7 @@ describe('Module.utils', function()
         vim.api.nvim_feedkeys('v', 'x!', true)
       end, function ()
         -- Assert
-        assert.equals('v', vim.fn.mode())
+        assert.equals('v', vim.api.nvim_get_mode().mode)
 
         -- Act
         local actual = sut()
@@ -50,7 +50,7 @@ describe('Module.utils', function()
         vim.api.nvim_feedkeys('viw', 'x!', true)
       end, function ()
         -- Assert
-        assert.equals('v', vim.fn.mode())
+        assert.equals('v', vim.api.nvim_get_mode().mode)
 
         -- Act
         local actual = sut()
@@ -67,7 +67,7 @@ describe('Module.utils', function()
         vim.api.nvim_feedkeys('vll', 'x!', true)
       end, function ()
         -- Assert
-        assert.equals('v', vim.fn.mode())
+        assert.equals('v', vim.api.nvim_get_mode().mode)
 
         -- Act
         local actual = sut()
