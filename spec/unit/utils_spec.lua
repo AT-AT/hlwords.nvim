@@ -12,6 +12,8 @@ describe('Module.utils', function()
   before_each(function()
     helper.cleanup_modules('hlwords')
     sut_module = require('hlwords.utils')
+
+    helper.event_emission(false)
   end)
 
   after_each(function()

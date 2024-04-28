@@ -19,6 +19,7 @@ describe('API.toggle()', function()
     helper.cleanup_modules('hlwords')
     sut_module = require('hlwords')
 
+    helper.event_emission(false)
     helper.set_plugin_name() -- Must do before the highlight definition in setup.
     sut_module.setup()
     sut = sut_module.toggle

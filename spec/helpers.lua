@@ -83,7 +83,24 @@ function M.set_option(key, value)
   require('hlwords.config').options[key] = value
 end
 
--- / Utility (Arrangement)
+-- TL;DR: If you allow events emission in a test, be sure to STOP emitting events IMMEDIATELY after
+--        it completes.
+--  - In vusted, the "window" is updated for each test file and an event related to the window is
+--    emitted, so if there is some auto command related to the window, you need to be careful about
+--    that point.
+--  - Since "window updates" are executed after the last test in a test file, even if you stop
+--    emitting events before the first test in the next test file, problems may occur as in the
+--    example below.
+--      Allow emitting events in the last test of test file A.
+--        -> Move to the next test file B while allowing the event to be emitted.
+--        -> Updating the window causes the event to be emitted and the test environment changes.
+--        -> Stop emitting events before the first test execution of test file B.
+--        -> But at this point, there is already some impact (Boooom).
+function M.event_emission(emit)
+  vim.o.eventignore = emit and '' or 'all'
+end
+
+-- / Utility (Extraction)
 -- -------------------------------------------------------------------------------------------------
 
 -- NOTE: Explicitly pass the target (bag) because it will be used from a custom assertion.
@@ -109,6 +126,9 @@ function M.extract_hldef()
 
   return extracted
 end
+
+-- / Utility (Arrangement)
+-- -------------------------------------------------------------------------------------------------
 
 function M.prepare_stage()
   -- First, there is a buffer and a window to display it.

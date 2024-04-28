@@ -12,6 +12,8 @@ describe('Module.letters', function()
   before_each(function()
     helper.cleanup_modules('hlwords')
     sut_module = require('hlwords.letters')
+
+    helper.event_emission(false)
   end)
 
   after_each(function()

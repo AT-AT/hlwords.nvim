@@ -12,6 +12,7 @@ describe('Option:', function()
     helper.cleanup_modules('hlwords')
     sut_module = require('hlwords')
 
+    helper.event_emission(false)
     helper.set_plugin_name()
   end)
 

@@ -51,6 +51,7 @@ describe('Module.highlight', function()
     sut_module = require('hlwords.highlight')
 
     sut_store = sut_module._records
+    helper.event_emission(false)
     helper.set_plugin_name()
     set_option('random', false) -- Always should be sequencial in tests.
   end)

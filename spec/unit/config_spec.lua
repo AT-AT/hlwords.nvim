@@ -10,6 +10,8 @@ describe('Module.config', function()
   before_each(function()
     helper.cleanup_modules('hlwords')
     sut_module = require('hlwords.config')
+
+    helper.event_emission(false)
   end)
 
   after_each(function()
