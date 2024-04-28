@@ -1,7 +1,7 @@
 local helper = require('spec.helpers')
 local assert = helper.assert
 
--- / Module
+-- / Subject
 -- -------------------------------------------------------------------------------------------------
 describe('Module.config', function()
   local sut_module

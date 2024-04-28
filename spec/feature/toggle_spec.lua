@@ -5,7 +5,7 @@ local on_uc_word = helper.on_uc_word
 local prepare_words = helper.prepare_words
 local wait_for = helper.wait_for
 
--- / Method
+-- / Subject
 -- -------------------------------------------------------------------------------------------------
 describe('API.toggle()', function()
   local sut_module

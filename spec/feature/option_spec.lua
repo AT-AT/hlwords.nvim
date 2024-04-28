@@ -3,7 +3,7 @@ local assert = helper.assert
 local extract_match = helper.extract_match
 local prepare_words = helper.prepare_words
 
--- / Method
+-- / Subject
 -- -------------------------------------------------------------------------------------------------
 describe('Option:', function()
   local sut_module

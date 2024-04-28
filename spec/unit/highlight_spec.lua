@@ -5,7 +5,7 @@ local extract_match = helper.extract_match
 local plugin_name = helper.plugin_name
 local set_option = helper.set_option
 
--- / Module
+-- / Subject
 -- -------------------------------------------------------------------------------------------------
 describe('Module.highlight', function()
   local sut_module

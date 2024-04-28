@@ -3,7 +3,7 @@ local assert = helper.assert
 local prepare_words = helper.prepare_words
 local wait_for = helper.wait_for
 
--- / Module
+-- / Subject
 -- -------------------------------------------------------------------------------------------------
 describe('Module.letters', function()
   local sut_module
