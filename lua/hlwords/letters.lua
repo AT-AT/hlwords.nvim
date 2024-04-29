@@ -26,6 +26,16 @@ local M = {}
 --  Function
 -- =================================================================================================
 
+---@return string
+function M.accept()
+  -- https://github.com/kylechui/nvim-surround/blob/main/lua/nvim-surround/input.lua
+  local status, result = pcall(
+    vim.fn.input, { prompt = 'Toggle highlight: ', cancelreturn = vim.NIL }
+  )
+
+  return (status and result ~= vim.NIL) and result or ''
+end
+
 ---@param target string
 ---@return string
 function M.to_pattern(target)

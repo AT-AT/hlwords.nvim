@@ -15,6 +15,7 @@ Thanks.
 
 - Toggle highlighting of the word under the cursor.
 - Toggle current selection highlighting.
+- Toggle highlighting of the word from input.
 - Remove all highlights by this plugin.
 
 ## Requirements
@@ -84,6 +85,9 @@ vim.keymap.set('n', '<leader>hh', function() require('hlwords').toggle() end)
 -- lines in "V-BLOCK" mode but it doesn't make much sense.
 vim.keymap.set('x', '<leader>hh', function() require('hlwords').toggle() end)
 
+-- Toggle highlighting of the word from input.
+vim.keymap.set('n', '<leader>hw', function() require('hlwords').accept() end)
+
 -- Remove all highlights.
 vim.keymap.set('n', '<leader>hc', function() require('hlwords').clear() end)
 ```
@@ -104,6 +108,12 @@ If you are using Lazy.nvim, you can perform lazy loading at the same time by reg
         require('hlwords').toggle()
       end,
       mode = 'x',
+    },
+    {
+      '<leader>hw',
+      function()
+        require('hlwords').accept()
+      end,
     },
     {
       '<leader>hc',

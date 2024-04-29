@@ -7,7 +7,7 @@ local wait_for = helper.wait_for
 
 -- / Subject
 -- -------------------------------------------------------------------------------------------------
-describe('API.toggle()', function()
+describe('API.toggle() can switch highlight', function()
   local sut_module
   local sut
 
@@ -39,7 +39,7 @@ describe('API.toggle()', function()
 
     -- / Word Type
     -- ---------------------------------------------------------------------------------------------
-    describe('can switch highlight on lowercase word', function()
+    describe('for lowercase word', function()
       before_each(function()
         prepare_words()
         on_lc_word()
@@ -95,11 +95,27 @@ describe('API.toggle()', function()
           assert.any_match_not(actual)
         end)
       end)
+
+      it('from argument', function()
+        -- Act
+        sut('bar')
+
+        -- Assert
+        local actual = vim.fn.getmatches()
+        assert.only_match(actual, '\\c\\Vbar')
+
+        -- Act
+        sut('bar')
+
+        -- Assert
+        actual = vim.fn.getmatches()
+        assert.any_match_not(actual)
+      end)
     end) -- Word Type
 
     -- / Word Type
     -- ---------------------------------------------------------------------------------------------
-    describe('can switch highlight on uppercase word', function()
+    describe('for uppercase word', function()
       before_each(function()
         prepare_words()
         on_uc_word()
@@ -155,11 +171,27 @@ describe('API.toggle()', function()
           assert.any_match_not(actual)
         end)
       end)
+
+      it('from argument', function()
+        -- Act
+        sut('Bar')
+
+        -- Assert
+        local actual = vim.fn.getmatches()
+        assert.only_match(actual, '\\C\\VBar')
+
+        -- Act
+        sut('Bar')
+
+        -- Assert
+        actual = vim.fn.getmatches()
+        assert.any_match_not(actual)
+      end)
     end) -- Word Type
 
     -- / Multiple
     -- ---------------------------------------------------------------------------------------------
-    describe('can switch highlight on strings with different case', function()
+    describe('for words with different case', function()
       before_each(function()
         prepare_words()
         on_lc_word()
@@ -208,7 +240,7 @@ describe('API.toggle()', function()
 
     -- / Word Type
     -- ---------------------------------------------------------------------------------------------
-    describe('can switch highlight on lowercase word', function()
+    describe('for lowercase word', function()
       before_each(function()
         prepare_words()
         on_lc_word()
@@ -264,11 +296,27 @@ describe('API.toggle()', function()
           assert.any_match_not(actual)
         end)
       end)
+
+      it('from argument', function()
+        -- Act
+        sut('bar')
+
+        -- Assert
+        local actual = vim.fn.getmatches()
+        assert.only_match(actual, '\\c\\Vbar')
+
+        -- Act
+        sut('bar')
+
+        -- Assert
+        actual = vim.fn.getmatches()
+        assert.any_match_not(actual)
+      end)
     end) -- Word Type
 
     -- / Word Type
     -- ---------------------------------------------------------------------------------------------
-    describe('can switch highlight on uppercase word', function()
+    describe('for uppercase word', function()
       before_each(function()
         prepare_words()
         on_uc_word()
@@ -324,11 +372,27 @@ describe('API.toggle()', function()
           assert.any_match_not(actual)
         end)
       end)
+
+      it('from argument', function()
+        -- Act
+        sut('Bar')
+
+        -- Assert
+        local actual = vim.fn.getmatches()
+        assert.only_match(actual, '\\c\\Vbar')
+
+        -- Act
+        sut('Bar')
+
+        -- Assert
+        actual = vim.fn.getmatches()
+        assert.any_match_not(actual)
+      end)
     end) -- Word Type
 
     -- / Multiple
     -- ---------------------------------------------------------------------------------------------
-    describe('can switch highlight on strings with different case', function()
+    describe('for words with different case', function()
       it('and always toggle both', function()
         -- Arrange
         prepare_words()
@@ -363,7 +427,7 @@ describe('API.toggle()', function()
 
     -- / Word Type
     -- ---------------------------------------------------------------------------------------------
-    describe('can switch highlight on lowercase word', function()
+    describe('for lowercase word', function()
       before_each(function()
         prepare_words()
         on_lc_word()
@@ -419,11 +483,27 @@ describe('API.toggle()', function()
           assert.any_match_not(actual)
         end)
       end)
+
+      it('from argument', function()
+        -- Act
+        sut('bar')
+
+        -- Assert
+        local actual = vim.fn.getmatches()
+        assert.only_match(actual, '\\C\\Vbar')
+
+        -- Act
+        sut('bar')
+
+        -- Assert
+        actual = vim.fn.getmatches()
+        assert.any_match_not(actual)
+      end)
     end) -- Word Type
 
     -- / Word Type
     -- ---------------------------------------------------------------------------------------------
-    describe('can switch highlight on uppercase word', function()
+    describe('for uppercase word', function()
       before_each(function()
         prepare_words()
         on_uc_word()
@@ -479,11 +559,27 @@ describe('API.toggle()', function()
           assert.any_match_not(actual)
         end)
       end)
+
+      it('from argument', function()
+        -- Act
+        sut('Bar')
+
+        -- Assert
+        local actual = vim.fn.getmatches()
+        assert.only_match(actual, '\\C\\VBar')
+
+        -- Act
+        sut('Bar')
+
+        -- Assert
+        actual = vim.fn.getmatches()
+        assert.any_match_not(actual)
+      end)
     end) -- Word Type
 
     -- / Multiple
     -- ---------------------------------------------------------------------------------------------
-    describe('can switch highlight on strings with different case', function()
+    describe('for words with different case', function()
       it('and always toggle one side', function()
         -- Arrange
         prepare_words()

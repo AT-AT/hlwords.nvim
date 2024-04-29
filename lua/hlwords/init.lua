@@ -26,6 +26,11 @@ local API = {}
 --  Function (API)
 -- =================================================================================================
 
+function API.accept()
+  local word = letters.accept()
+  API.toggle(word)
+end
+
 function API.clear()
   highlight.off()
 end
@@ -49,8 +54,9 @@ function API.setup(local_options)
   })
 end
 
-function API.toggle()
-  local word = letters.retrieve()
+---@param from_input string
+function API.toggle(from_input)
+  local word = type(from_input) == 'string' and from_input or letters.retrieve()
 
   if #word == 0 then
     return
@@ -71,7 +77,8 @@ end
 -- =================================================================================================
 
 return {
+  accept = API.accept,
+  clear = API.clear,
   setup = API.setup,
   toggle = API.toggle,
-  clear = API.clear,
 }
