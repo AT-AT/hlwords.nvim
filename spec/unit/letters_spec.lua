@@ -209,4 +209,11 @@ describe('Module.letters', function()
       end)
     end)
   end) -- Function
+
+  -- / Function
+  -- -----------------------------------------------------------------------------------------------
+  describe('accept() can get characters', function ()
+    -- TODO: Add test when I figure out how to emulate user input via input().
+    pending('from user input', function()end)
+  end)
 end)
