@@ -44,8 +44,8 @@ Below are the configurable options and their default values.
 {
   -- Highlight colors.
   -- We only provide primitive highlight colors, so change them to match your colorscheme.
-  -- You can set any number of color definition maps that are compatible with nvim_set_hl(), and can
-  -- highlight as many items as you set here at the same time.
+  -- You can set any number of color definition maps that are compatible with nvim_set_hl(),
+  -- and can highlight as many items as you set here at the same time.
   -- See: https://neovim.io/doc/user/api.html#nvim_set_hl()
   colors = {
     { fg = '#000000', bg = '#00ffff' },
@@ -65,13 +65,14 @@ Below are the configurable options and their default values.
   -- Handling of words specified in normal mode.
   -- When highlighting is executed in normal mode, a pattern including word boundaries
   -- ('\\<' .. word .. '\\>') is used in interestingwords.nvim, but not in vim-quickhl.
-  -- If set to false, the match pattern will no longer represent exact words, so the behavior will
-  -- be similar to vim-quickhl.
+  -- If set to false, the match pattern will no longer represent exact words, so the
+  -- behavior will be similar to vim-quickhl.
   strict_word = false,
 }
 ```
 
-Note that the behavior of this plugin is affected by the settings of the `ignorecase`  and `smartcase` options. See [the documentation](doc/hlwords-nvim.txt) for details.
+Note that the behavior of this plugin is affected by the settings of the `ignorecase`  and `smartcase` options.  
+See [the documentation](doc/hlwords-nvim.txt) for details.
 
 ## Key Mappings
 
@@ -81,8 +82,8 @@ This plugin does not provide a default keymap. Below is an example.
 vim.keymap.set('n', '<leader>hh', function() require('hlwords').toggle() end)
 
 -- Toggle highlighting current selection.
--- Note that "V-LINE" mode is not applicable, and it's possible to select a range spanning multiple
--- lines in "V-BLOCK" mode but it doesn't make much sense.
+-- Note that "V-LINE" mode is not applicable, and it's possible to select a range
+-- spanning multiple lines in "V-BLOCK" mode but it doesn't make much sense.
 vim.keymap.set('x', '<leader>hh', function() require('hlwords').toggle() end)
 
 -- Toggle highlighting of the word from input.
@@ -101,13 +102,7 @@ If you are using Lazy.nvim, you can perform lazy loading at the same time by reg
       function()
         require('hlwords').toggle()
       end,
-    },
-    {
-      '<leader>hh',
-      function()
-        require('hlwords').toggle()
-      end,
-      mode = 'x',
+      mode = { 'n', 'x' },
     },
     {
       '<leader>hw',
