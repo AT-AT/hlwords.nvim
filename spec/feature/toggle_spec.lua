@@ -20,7 +20,7 @@ describe('API.toggle() can switch highlight', function()
     sut_module = require('hlwords')
 
     helper.event_emission(false)
-    helper.set_plugin_name() -- Must do before the highlight definition in setup.
+    helper.mock_plugin_name() -- Must do before the highlight definition in setup.
     sut_module.setup()
     sut = sut_module.toggle
   end)
@@ -67,7 +67,7 @@ describe('API.toggle() can switch highlight', function()
           start_visual()
         end, function ()
           -- Assert
-          assert.equals('v', vim.api.nvim_get_mode().mode)
+          assert.is_visual_mode()
 
           -- Act
           sut()
@@ -85,7 +85,7 @@ describe('API.toggle() can switch highlight', function()
           start_visual()
         end, function()
           -- Assert
-          assert.equals('v', vim.api.nvim_get_mode().mode)
+          assert.is_visual_mode()
 
           -- Act
           sut()
@@ -143,7 +143,7 @@ describe('API.toggle() can switch highlight', function()
           start_visual()
         end, function ()
           -- Assert
-          assert.equals('v', vim.api.nvim_get_mode().mode)
+          assert.is_visual_mode()
 
           -- Act
           sut()
@@ -161,7 +161,7 @@ describe('API.toggle() can switch highlight', function()
           start_visual()
         end, function ()
           -- Assert
-          assert.equals('v', vim.api.nvim_get_mode().mode)
+          assert.is_visual_mode()
 
           -- Act
           sut()
@@ -268,7 +268,7 @@ describe('API.toggle() can switch highlight', function()
           start_visual()
         end, function ()
           -- Assert
-          assert.equals('v', vim.api.nvim_get_mode().mode)
+          assert.is_visual_mode()
 
           -- Act
           sut()
@@ -286,7 +286,7 @@ describe('API.toggle() can switch highlight', function()
           start_visual()
         end, function()
           -- Assert
-          assert.equals('v', vim.api.nvim_get_mode().mode)
+          assert.is_visual_mode()
 
           -- Act
           sut()
@@ -344,7 +344,7 @@ describe('API.toggle() can switch highlight', function()
           start_visual()
         end, function ()
           -- Assert
-          assert.equals('v', vim.api.nvim_get_mode().mode)
+          assert.is_visual_mode()
 
           -- Act
           sut()
@@ -362,7 +362,7 @@ describe('API.toggle() can switch highlight', function()
           start_visual()
         end, function ()
           -- Assert
-          assert.equals('v', vim.api.nvim_get_mode().mode)
+          assert.is_visual_mode()
 
           -- Act
           sut()
@@ -455,7 +455,7 @@ describe('API.toggle() can switch highlight', function()
           start_visual()
         end, function ()
           -- Assert
-          assert.equals('v', vim.api.nvim_get_mode().mode)
+          assert.is_visual_mode()
 
           -- Act
           sut()
@@ -473,7 +473,7 @@ describe('API.toggle() can switch highlight', function()
           start_visual()
         end, function()
           -- Assert
-          assert.equals('v', vim.api.nvim_get_mode().mode)
+          assert.is_visual_mode()
 
           -- Act
           sut()
@@ -531,7 +531,7 @@ describe('API.toggle() can switch highlight', function()
           start_visual()
         end, function ()
           -- Assert
-          assert.equals('v', vim.api.nvim_get_mode().mode)
+          assert.is_visual_mode()
 
           -- Act
           sut()
@@ -549,7 +549,7 @@ describe('API.toggle() can switch highlight', function()
           start_visual()
         end, function ()
           -- Assert
-          assert.equals('v', vim.api.nvim_get_mode().mode)
+          assert.is_visual_mode()
 
           -- Act
           sut()

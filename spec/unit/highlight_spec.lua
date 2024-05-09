@@ -2,10 +2,10 @@ local helper = require('spec.helpers')
 local assert = helper.assert
 local extract_hldef = helper.extract_hldef
 local extract_match = helper.extract_match
+local mock_config_option = helper.mock_config_option
 local move_to_win = helper.move_to_win
 local prepare_stage = helper.prepare_stage
 local plugin_name = helper.plugin_name
-local set_option = helper.set_option
 
 -- / Subject
 -- -------------------------------------------------------------------------------------------------
@@ -52,9 +52,9 @@ describe('Module.highlight', function()
 
     sut_store = sut_module._records
     helper.event_emission(false)
-    helper.set_plugin_name()
+    helper.mock_plugin_name()
     stub(require('hlwords.utils'), 'notice')
-    set_option('random', false) -- Always should be sequencial in tests.
+    mock_config_option('random', false) -- Always should be sequencial in tests.
   end)
 
   after_each(function()
@@ -70,7 +70,7 @@ describe('Module.highlight', function()
 
     it('no yet registered any plugin highlight definition', function ()
       -- Arrange
-      set_option('colors', { { fg = 'none' } })
+      mock_config_option('colors', { { fg = 'none' } })
 
       -- Act
       sut()
@@ -82,7 +82,7 @@ describe('Module.highlight', function()
 
     it('after deleting highlight definitions that were already registered', function ()
       -- Arrange
-      set_option('colors', { { fg = 'none' }, { fg = 'none' } })
+      mock_config_option('colors', { { fg = 'none' }, { fg = 'none' } })
 
       -- Act
       sut()
@@ -93,7 +93,7 @@ describe('Module.highlight', function()
 
       -- Arrange
       local first = actual[1]
-      set_option('colors', { { fg = 'none' } })
+      mock_config_option('colors', { { fg = 'none' } })
 
       -- Act
       sut()

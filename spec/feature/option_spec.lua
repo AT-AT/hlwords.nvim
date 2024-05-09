@@ -13,7 +13,7 @@ describe('Option:', function()
     sut_module = require('hlwords')
 
     helper.event_emission(false)
-    helper.set_plugin_name()
+    helper.mock_plugin_name()
   end)
 
   after_each(function()

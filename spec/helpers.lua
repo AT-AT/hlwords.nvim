@@ -71,16 +71,33 @@ assert:register(
   'assertion.any_match.positive', 'assertion.any_match.negative'
 )
 
+local function is_visual_mode(_)
+  return vim.api.nvim_get_mode().mode == 'v'
+end
+
+say:set('assertion.is_visual_mode.positive', 'Expected mode is visual')
+say:set('assertion.is_visual_mode.negative', 'Expected mode is not visual')
+assert:register(
+  'assertion',
+  'is_visual_mode', is_visual_mode,
+  'assertion.is_visual_mode.positive', 'assertion.is_visual_mode.negative'
+)
+
 -- / Utility (Environment)
 -- -------------------------------------------------------------------------------------------------
 
-function M.set_plugin_name()
+function M.mock_plugin_name()
   require('hlwords.config').plugin_name = M.plugin_name
   return M.plugin_name
 end
 
-function M.set_option(key, value)
-  require('hlwords.config').options[key] = value
+function M.mock_config_option(key, value)
+  local map = type(key) == 'table' and key or { [key] = value }
+  local options_ref = require('hlwords.config').options
+
+  for k, v in pairs(map) do
+    options_ref[k] = v
+  end
 end
 
 -- TL;DR: If you allow events emission in a test, be sure to STOP emitting events IMMEDIATELY after
@@ -160,7 +177,7 @@ function M.prepare_stage()
   return buf1, buf2, win1, win2, append
 end
 
--- NOTE: Implicitly refer to current buffer.
+-- NOTE: Implicitly refer to current buffer/window.
 function M.prepare_words(...)
   local words = { ... }
 
@@ -172,12 +189,12 @@ function M.prepare_words(...)
   vim.api.nvim_win_set_cursor(0, { 1, 0 })
 end
 
--- NOTE: Implicitly refer to current buffer.
+-- NOTE: Implicitly refer to current window.
 function M.on_lc_word()
   vim.api.nvim_win_set_cursor(0, { 1, 0 })
 end
 
--- NOTE: Implicitly refer to current buffer.
+-- NOTE: Implicitly refer to current window.
 function M.on_uc_word()
   vim.api.nvim_win_set_cursor(0, { 2, 0 })
 end
