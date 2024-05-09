@@ -1,7 +1,7 @@
 local helper = require('spec.helpers')
 local assert = helper.assert
+local mock_config_option = helper.mock_config_option
 local prepare_words = helper.prepare_words
-local set_option = helper.set_option
 local wait_for = helper.wait_for
 
 -- / Subject
@@ -31,7 +31,7 @@ describe('Module.letters', function()
     it('with applying word boundary', function ()
       -- Arrange
       vim.opt.ignorecase = false
-      set_option('strict_word', true)
+      mock_config_option('strict_word', true)
 
       -- Act
       local actual = sut('foo')
@@ -145,7 +145,7 @@ describe('Module.letters', function()
           vim.api.nvim_feedkeys('viw', 'x!', true)
         end, function ()
           -- Assert
-          assert.equals('v', vim.api.nvim_get_mode().mode)
+          assert.is_visual_mode()
 
           -- Act
           local actual = sut()
@@ -163,7 +163,7 @@ describe('Module.letters', function()
           vim.api.nvim_feedkeys('vll', 'x!', true)
         end, function ()
           -- Assert
-          assert.equals('v', vim.api.nvim_get_mode().mode)
+          assert.is_visual_mode()
 
           -- Act
           local actual = sut()
@@ -181,7 +181,7 @@ describe('Module.letters', function()
           vim.api.nvim_feedkeys('vhh', 'x!', true)
         end, function ()
           -- Assert
-          assert.equals('v', vim.api.nvim_get_mode().mode)
+          assert.is_visual_mode()
 
           -- Act
           local actual = sut()
@@ -198,7 +198,7 @@ describe('Module.letters', function()
           vim.api.nvim_feedkeys('vllj', 'x!', true)
         end, function ()
           -- Assert
-          assert.equals('v', vim.api.nvim_get_mode().mode)
+          assert.is_visual_mode()
 
           -- Act
           local actual = sut()

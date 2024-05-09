@@ -14,7 +14,7 @@ describe('AutoCmd:', function()
     sut_module = require('hlwords')
 
     helper.event_emission(false)
-    helper.set_plugin_name() -- Must do before the highlight definition in setup.
+    helper.mock_plugin_name() -- Must do before the highlight definition in setup.
     sut_module.setup()
   end)
 
