@@ -40,9 +40,9 @@ local M = {}
 ---@type highlight_record
 local records = {}
 
--- Yes, this is BAD practice, but it's done for convenience.
-if _TEST then ---@diagnostic disable-line: undefined-global
-  M._records = records
+-- For testing (yes, this is BAD practice, but it's done for convenience, sorry).
+function M.grub_records()
+  return records
 end
 
 -- / Modification
