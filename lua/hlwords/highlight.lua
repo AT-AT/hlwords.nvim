@@ -2,11 +2,10 @@
 --  Types
 -- =================================================================================================
 
----@alias word_pattern string
----@alias match_id integer
 ---@alias highlight_group string
----@alias highlight_spec { word_pattern: word_pattern?, match_id: match_id? }
----@alias highlight_record table<highlight_group, highlight_spec>
+---@alias word_pattern string
+---@alias highlight_record { hl_group: highlight_group,  word_pattern: word_pattern? }
+---@alias match_id number
 
 
 -- =================================================================================================
@@ -37,7 +36,7 @@ local M = {}
 --  Function
 -- =================================================================================================
 
----@type highlight_record
+---@type highlight_record[]
 local records = {}
 
 -- For testing (yes, this is BAD practice, but it's done for convenience, sorry).
@@ -45,61 +44,48 @@ function M.grub_records()
   return records
 end
 
--- / Modification
+-- / Record Modification
 -- -------------------------------------------------------------------------------------------------
 
 ---@param hl_group highlight_group
 ---@param word_pattern word_pattern?
----@param match_id match_id?
-function M.record(hl_group, word_pattern, match_id)
-  records[hl_group] = { word_pattern = word_pattern, match_id = match_id }
+function M.record(hl_group, word_pattern)
+  for _, record in ipairs(records) do
+    if record.hl_group == hl_group then
+      record.word_pattern = word_pattern
+      return
+    end
+  end
+
+  table.insert(records, { hl_group = hl_group, word_pattern = word_pattern })
 end
 
 ---@param hl_group highlight_group
 function M.register(hl_group)
-  M.record(hl_group, nil, nil)
+  M.record(hl_group, nil)
 end
 
 ---@param hl_group highlight_group
 function M.revert(hl_group)
-  M.record(hl_group, nil, nil)
+  M.record(hl_group, nil)
 end
 
--- / Iteration
+-- / Record Manipulation
 -- -------------------------------------------------------------------------------------------------
 
 ---@param word_pattern word_pattern
 ---@return boolean
 function M.is_used_for(word_pattern)
-  for _, spec in pairs(records) do
-    if spec.word_pattern == word_pattern then
-      return true
-    end
-  end
-
-  return false
-end
-
----@return match_id[]
-function M.match_ids()
-  local ids = {}
-
-  for _, spec in pairs(records) do
-    if spec.match_id ~= nil then
-      table.insert(ids, spec.match_id)
-    end
-  end
-
-  return ids
+  return vim.tbl_count(M.record_of(word_pattern)) >= 1
 end
 
 ---@return highlight_group?
 function M.pick()
   local picked = {}
 
-  for hl_group, spec in pairs(records) do
-    if not spec.word_pattern then
-      table.insert(picked, hl_group)
+  for _, record in ipairs(records) do
+    if not record.word_pattern then
+      table.insert(picked, record.hl_group)
     end
   end
 
@@ -112,21 +98,16 @@ function M.pick()
   if config.options.random then
     return picked[math.random(picked_count)]
   else
-    table.sort(picked)
     return picked[1]
   end
 end
 
 ---@param word_pattern word_pattern
----@return highlight_record?
+---@return highlight_record[]
 function M.record_of(word_pattern)
-  for hl_group, spec in pairs(records) do
-    if spec.word_pattern == word_pattern then
-      return { [hl_group] = spec }
-    end
-  end
-
-  return nil
+  return vim.tbl_filter(function(record)
+    return record.word_pattern == word_pattern
+  end, records)
 end
 
 -- / Match Manipulation
@@ -134,30 +115,56 @@ end
 
 ---@param win_id integer
 function M.apply(win_id)
-  local hl_group_prefix = config.plugin_name
   local priority = config.options.highlight_priority
+  local matches = fn.getmatches(win_id)
+  local extract_match = function(stack, key)
+    return vim.tbl_filter(function(match)
+      return match.group == key
+    end, stack)
+  end
 
-  api.nvim_win_call(win_id, function()
-    local matches = vim.tbl_filter(function(item)
-      return vim.startswith(item.group, hl_group_prefix)
-    end, fn.getmatches())
+  for _, record in ipairs(records) do
+    local current_matches = extract_match(matches, record.hl_group)
+    local match_count = vim.tbl_count(current_matches)
 
-    matches = vim.tbl_map(function(item)
-      return item.group
-    end, matches)
+    if match_count > 1 then
+      utils.fail(string.format(
+        'Multiple matches of highlight group %s were found.', record.hl_group
+      ))
 
-    for hl_group, spec in pairs(records) do
-      if spec.match_id ~= nil and not vim.tbl_contains(matches, hl_group) then
-        local result = fn.matchadd(hl_group, spec.word_pattern, priority, spec.match_id)
+      return
+    end
 
-        if result == -1 then
-          utils.fail(string.format(
-            'Unable to add match "%s" in window (id=%d).', tostring(spec.word_pattern), win_id
-          ))
+    local has_match = match_count == 1
+    local match = current_matches[1]
+
+    if record.word_pattern then
+      local should_update = has_match and record.word_pattern ~= match.pattern
+
+      if should_update then
+        fn.matchdelete(match.id, win_id)
+      end
+
+      if should_update or not has_match then
+        local candidate_id = nil
+
+        if has_match then
+          candidate_id = match.id
         end
+
+        local match_id = M.fix_match_id(win_id, candidate_id)
+
+        -- Currently, the diagnostic message is suppressed because the type of the "option"
+        -- parameter cannot be correctly recognized.
+        ---@diagnostic disable-next-line: param-type-mismatch
+        fn.matchadd(record.hl_group, record.word_pattern, priority, match_id, { window = win_id })
+      end
+    else
+      if has_match then
+        fn.matchdelete(match.id, win_id)
       end
     end
-  end)
+  end
 end
 
 function M.define()
@@ -177,36 +184,62 @@ function M.define()
   end
 end
 
+---@param win_id number
+---@param candidate number?
+---@return match_id?
+function M.fix_match_id(win_id, candidate)
+  local max = 2000 -- Set a maximum limit just in case.
+  local start = candidate or 1000
+  local used = {}
+
+  if start > max then
+    start = 1000
+  end
+
+  for _, match in ipairs(fn.getmatches(win_id)) do
+    if match.id and match.id >= 1000 then
+      used[match.id] = true
+    end
+  end
+
+  for id = start, max do
+    if not used[id] then
+      return id
+    end
+  end
+
+  utils.fail(string.format(
+    'Unable to fix the match-id between "%d" to "%d".', start, max
+  ))
+
+  return nil
+end
+
 ---@param word_pattern word_pattern?
 function M.off(word_pattern)
-  local target = word_pattern and M.record_of(word_pattern) or records
+  local target = nil
 
-  if not target then
-    utils.fail(string.format(
-      'Unable to find the highlight and match-id for "%s".', tostring(word_pattern)
-    ))
+  if word_pattern == nil then
+    target = records
+  else
+    target = M.record_of(word_pattern)
+  end
+
+  if vim.tbl_count(target) == 0 then
+    if word_pattern then
+      utils.fail(string.format(
+        'Unable to find the highlight for "%s".', tostring(word_pattern)
+      ))
+    end
+
     return
   end
 
-  local wins = api.nvim_list_wins()
-
-  for hl_group, spec in pairs(target) do
-    if spec.match_id then
-      M.revert(hl_group)
-
-      for _, win_id in pairs(wins) do
-        local result = api.nvim_win_call(win_id, function()
-          return fn.matchdelete(spec.match_id)
-        end)
-
-        if result == -1 then
-          utils.fail(string.format(
-            'Unable to remove the match (id=%d) on window (id=%d).', spec.match_id, win_id
-          ))
-        end
-      end
-    end
+  for _, record in ipairs(target) do
+    M.revert(record.hl_group)
   end
+
+  M.propagate()
 end
 
 ---@param word_pattern word_pattern
@@ -218,25 +251,16 @@ function M.on(word_pattern)
     return
   end
 
-  local match_id = -1
+  M.record(hl_group, word_pattern)
+  M.propagate()
+end
+
+function M.propagate()
   local wins = api.nvim_list_wins()
-  local priority = config.options.highlight_priority
 
   for _, win_id in pairs(wins) do
-    local registered_id = api.nvim_win_call(win_id, function()
-      return fn.matchadd(hl_group, word_pattern, priority, match_id)
-    end)
-
-    if registered_id == -1 then
-      utils.fail(string.format(
-        'Unable to add match "%s" in window (id=%d).', tostring(word_pattern), win_id
-      ))
-    else
-      match_id = registered_id
-    end
+    M.apply(win_id)
   end
-
-  M.record(hl_group, word_pattern, match_id)
 end
 
 
