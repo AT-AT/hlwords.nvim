@@ -18,7 +18,8 @@ local Helpers = {}
 ---@field setup function
 ---@field change_config function
 ---@field config_of function
----@field prepare_stage function
+---@field append_stage function
+---@field move_to_win function
 ---@field prepare_words function
 ---@field prev_row function
 ---@field next_row function
@@ -49,24 +50,23 @@ function Helpers.new_child_neovim(path)
   -- / Staging Helper
   -- -----------------------------------------------------------------------------------------------
 
-  function child.prepare_stage()
-    -- First, there is a buffer and a window to display it.
-    local buf1 = child.api.nvim_get_current_buf()
-    local win1 = child.api.nvim_get_current_win()
-
-    -- Creates new buffers.
+  -- Note:
+  --  - Since win=-1, it is splited and added at the top level (initial-created-window).
+  --  - The added window does not become the current window.
+  function child.append_stage()
+    -- Creates a new buffer.
     -- Even if any buffer is created here, the current buffer will not change.
-    local buf2 = child.api.nvim_create_buf(true, false)
-    local buf3 = child.api.nvim_create_buf(true, false)
+    local buf = child.api.nvim_create_buf(true, false)
 
-    -- Creates new windows.
-    local win2 = child.api.nvim_open_win(buf2, false, { split = 'right', vertical = true, win = -1 })
-    local win3 = child.api.nvim_open_win(buf3, false, { split = 'right', vertical = true, win = -1 })
+    -- Creates a new window.
+    -- Since the second parameter is set to false, the current buffer is not changed.
+    local win = child.api.nvim_open_win(buf, false, { split = 'right', vertical = true, win = -1 })
 
-    -- Set the current window to the initial window (just in case).
-    child.api.nvim_set_current_win(win1)
+    return { buf = buf, win = win }
+  end
 
-    return { buf = { buf1, buf2, buf3 }, win = { win1, win2, win3 } }
+  function child.move_to_win(win_id)
+    child.api.nvim_set_current_win(win_id)
   end
 
   -- Note:

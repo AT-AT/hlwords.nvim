@@ -287,8 +287,8 @@ describe('Module.highlight', function()
 
       it('with no desired starting number specified in minimal environment', function()
         -- Arrange
-        local stage = child.prepare_stage()
-        local win_id = stage.win[1]
+        local stage = child.append_stage()
+        local win_id = stage.win
 
         -- Act
         local actual = child.lua_get(string.format(
@@ -301,8 +301,8 @@ describe('Module.highlight', function()
 
       it('with desired starting number specified in minimal environment', function()
         -- Arrange
-        local stage = child.prepare_stage()
-        local win_id = stage.win[1]
+        local stage = child.append_stage()
+        local win_id = stage.win
 
         -- Act
         local actual = child.lua_get(string.format(
@@ -315,8 +315,8 @@ describe('Module.highlight', function()
 
       it('even if another id already exists', function()
         -- Arrange
-        local stage = child.prepare_stage()
-        local win_id = stage.win[1]
+        local stage = child.append_stage()
+        local win_id = stage.win
         local used_id = add_match({ hl_group = 'Foo', word_pattern = 'foo' }, win_id)
 
         -- Act
@@ -395,9 +395,10 @@ describe('Module.highlight', function()
 
     it('can update highlight usage with word-pattern and apply it across all windows', function()
       -- Arrange
-      local stage = child.prepare_stage()
-      local win1_id = stage.win[1]
-      local win2_id = stage.win[2]
+      local stage1 = child.append_stage()
+      local win1_id = stage1.win
+      local stage2 = child.append_stage()
+      local win2_id = stage2.win
       set_record('Foo', nil)
 
       -- Act
@@ -414,9 +415,10 @@ describe('Module.highlight', function()
 
     it('cannot update and apply if highlight is not in stock', function()
       -- Arrange
-      local stage = child.prepare_stage()
-      local win1_id = stage.win[1]
-      local win2_id = stage.win[2]
+      local stage1 = child.append_stage()
+      local win1_id = stage1.win
+      local stage2 = child.append_stage()
+      local win2_id = stage2.win
       set_record('Foo', 'foo')
       add_match({ hl_group = 'Foo', word_pattern = 'foo' }, win1_id)
       add_match({ hl_group = 'Foo', word_pattern = 'foo' }, win2_id)
@@ -443,9 +445,10 @@ describe('Module.highlight', function()
 
     it('can clear highlight usage for specified one and apply it across all windows', function()
       -- Arrange
-      local stage = child.prepare_stage()
-      local win1_id = stage.win[1]
-      local win2_id = stage.win[2]
+      local stage1 = child.append_stage()
+      local win1_id = stage1.win
+      local stage2 = child.append_stage()
+      local win2_id = stage2.win
       set_record('Foo', 'foo')
       add_match({ hl_group = 'Foo', word_pattern = 'foo' }, win1_id)
       add_match({ hl_group = 'Foo', word_pattern = 'foo' }, win2_id)
@@ -464,9 +467,10 @@ describe('Module.highlight', function()
 
     it('can clear all highlight usage and apply it across all windows', function()
       -- Arrange
-      local stage = child.prepare_stage()
-      local win1_id = stage.win[1]
-      local win2_id = stage.win[2]
+      local stage1 = child.append_stage()
+      local win1_id = stage1.win
+      local stage2 = child.append_stage()
+      local win2_id = stage2.win
       set_record('Foo', 'foo')
       set_record('Bar', 'bar')
       add_match({ hl_group = 'Foo', word_pattern = 'foo' }, win1_id)
@@ -488,9 +492,10 @@ describe('Module.highlight', function()
 
     it('do nothing if passed pattern does not exist', function()
       -- Arrange
-      local stage = child.prepare_stage()
-      local win1_id = stage.win[1]
-      local win2_id = stage.win[2]
+      local stage1 = child.append_stage()
+      local win1_id = stage1.win
+      local stage2 = child.append_stage()
+      local win2_id = stage2.win
       set_record('Foo', 'foo')
       add_match({ hl_group = 'Foo', word_pattern = 'foo' }, win1_id)
       add_match({ hl_group = 'Foo', word_pattern = 'foo' }, win2_id)
