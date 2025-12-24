@@ -7,6 +7,7 @@ local child = H.new_child_neovim('hlwords.letters')
 -- / Module
 -- -------------------------------------------------------------------------------------------------
 describe('Module.letters', function()
+
   before_each(function()
     child.setup()
   end)

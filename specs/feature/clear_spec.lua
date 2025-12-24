@@ -17,30 +17,40 @@ describe('API.clear()', function()
     child.stop()
   end)
 
-  it('can remove all highlights', function()
-    -- Arrange
-    child.o.ignorecase = false
-    child.prepare_words('foo', 'Foo')
-    child.lua([[SUT.toggle()]])
-    child.next_row()
-    child.lua([[SUT.toggle()]])
+  -- / Expectation
+  -- -----------------------------------------------------------------------------------------------
+  describe('(after setup)', function()
 
-    -- Act
-    child.lua([[SUT.clear()]])
-    local actual = child.grub_matches()
+    before_each(function()
+      child.lua([[SUT.setup()]])
+    end)
 
-    -- Assert
-    has_none_match(actual)
-  end)
+    it('can remove all highlights', function()
+      -- Arrange
+      child.o.ignorecase = false
+      child.prepare_words('foo', 'Foo')
+      child.lua([[SUT.toggle()]])
+      child.next_row()
+      child.lua([[SUT.toggle()]])
 
-  it('can be executed without error even if there is no highlight', function()
-    -- Arrange
-
-    -- Assert
-    no_error(function()
       -- Act
       child.lua([[SUT.clear()]])
+      local actual = child.grub_matches()
+
+      -- Assert
+      has_none_match(actual)
     end)
+
+    it('can be executed without error even if there is no highlight', function()
+      -- Arrange
+
+      -- Assert
+      no_error(function()
+        -- Act
+        child.lua([[SUT.clear()]])
+      end)
+    end)
+
   end)
 
 end)
