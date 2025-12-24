@@ -20,8 +20,9 @@ Thanks.
 
 ## Requirements
 
-- Neovim >= 0.9.5
-  - Because it was developed with this version. Since it is simple, I think it will work even in lower versions.
+- Neovim >= 0.11
+  - Because it is developed with this version. Since it is simple, I think it will work even in lower versions.
+  - Please note that version 0.10 or higher is required to run the tests.
 
 ## Installation
 

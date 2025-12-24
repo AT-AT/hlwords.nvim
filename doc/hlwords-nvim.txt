@@ -212,10 +212,26 @@ highlight, and "{}" represents another highlight.
 
 
 Install Lua-5.1
-Install LuaRocks
-Install busted (global, https://github.com/lunarmodules/busted)
-Install vusted (global, https://github.com/notomo/vusted)
-Run vusted
+  - Neovim and its plugins explicitly require version 5.1.
+
+Install Mini.test (https://github.com/nvim-mini/mini.test)
+  - As a Neovim plugin.
+  - Also, install the dependent files under the deps directory.
+  - Set the plugin option to treat "specs/*_spec.lua" as a test file.
+
+Writing Test
+  - Use specs/template.lua as a template.
+
+Run Test
+  - On Neovim:
+    - Per file: Run ":lua MiniTest.run_file()" in the buffer for the target
+      test file.
+    - All tests: Run ":lua MiniTest.run()" in any buffer.
+  - On the shell: >shell
+    nvim --headless --noplugin -u ./scripts/minimal_init.lua -c "lua MiniTest.run()"
+<
+  - The working directory of the launched Neovim or the runtime directory of
+    the shell must be the root directory of the plugin project.
 
 
 ==============================================================================
