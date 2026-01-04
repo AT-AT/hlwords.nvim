@@ -21,8 +21,6 @@ local Helpers = {}
 ---@field append_stage function
 ---@field move_to_win function
 ---@field prepare_words function
----@field prev_row function
----@field next_row function
 ---@field grub_matches function
 
 function Helpers.new_child_neovim(path)
@@ -83,16 +81,6 @@ function Helpers.new_child_neovim(path)
     child.api.nvim_win_set_cursor(0, { 1, 0 })
   end
 
-  function child.prev_row()
-    local pos = child.api.nvim_win_get_cursor(0)
-    child.api.nvim_win_set_cursor(0, { pos[1] - 1, 0 })
-  end
-
-  function child.next_row()
-    local pos = child.api.nvim_win_get_cursor(0)
-    child.api.nvim_win_set_cursor(0, { pos[1] + 1, 0 })
-  end
-
   -- / Assertion Helper
   -- -----------------------------------------------------------------------------------------------
   function child.grub_matches(win_id)
@@ -110,8 +98,15 @@ end
 
 Helpers.expect = {}
 
-function Helpers.extract_match(matches, expected)
-  local params = Helpers.extract_match_params(expected)
+local function extract_match_params(params)
+  local group = params.g
+  local pattern = params.p
+  local priority = params.pr
+  return { group = group, pattern = pattern, priority = priority }
+end
+
+local function extract_match(matches, expected)
+  local params = extract_match_params(expected)
 
   return vim.tbl_filter(function(match)
     local has_group = false
@@ -162,22 +157,15 @@ function Helpers.extract_match(matches, expected)
   end, matches)
 end
 
-function Helpers.extract_match_params(params)
-  local group = params.g
-  local pattern = params.p
-  local priority = params.pr
-  return { group = group, pattern = pattern, priority = priority }
-end
-
 Helpers.expect.has_match = MiniTest.new_expectation(
   'match existence determination',
   function(expected, actual)
-    local extracted = Helpers.extract_match(actual, expected)
+    local extracted = extract_match(actual, expected)
 
     return vim.tbl_count(extracted) == 1
   end,
   function(expected, _)
-    local param = Helpers.to_string(Helpers.extract_match_params(expected))
+    local param = Helpers.to_string(extract_match_params(expected))
 
     return string.format('The match (%s) does not exist.', param)
   end
@@ -186,12 +174,12 @@ Helpers.expect.has_match = MiniTest.new_expectation(
 Helpers.expect.has_no_match = MiniTest.new_expectation(
   'match non-existence determination',
   function(expected, actual)
-    local extracted = Helpers.extract_match(actual, expected)
+    local extracted = extract_match(actual, expected)
 
     return vim.tbl_count(extracted) ~= 1 -- Multiple matches are also considered a failure.
   end,
   function(expected, _)
-    local param = Helpers.to_string(Helpers.extract_match_params(expected))
+    local param = Helpers.to_string(extract_match_params(expected))
 
     return string.format('The match (%s) exists.', param)
   end
