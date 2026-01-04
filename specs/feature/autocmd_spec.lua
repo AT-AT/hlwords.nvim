@@ -16,9 +16,9 @@ describe('AutoCmd', function()
     child.stop()
   end)
 
-  -- / Expectation
+  -- / Pre-Configuration
   -- -----------------------------------------------------------------------------------------------
-  describe('(after setup)', function()
+  describe('(setup)', function()
 
     before_each(function()
       child.lua([[SUT.setup()]])

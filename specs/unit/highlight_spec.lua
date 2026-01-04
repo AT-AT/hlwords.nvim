@@ -18,9 +18,6 @@ describe('Module.highlight', function()
     child.stop()
   end)
 
-  -- / Helper
-  -- -----------------------------------------------------------------------------------------------
-
   local function grub_records()
     return child.lua_get([[SUT.grub_records()]])
   end
@@ -35,17 +32,6 @@ describe('Module.highlight', function()
 
   local function to_record(hl_group, word_pattern)
     return { hl_group = hl_group, word_pattern = word_pattern }
-  end
-
-  local function extract_hldef()
-    local hl_prefix = child.config_of('plugin_name')
-    local hl_groups = vim.tbl_keys(child.api.nvim_get_hl(0, {}))
-    local extracted = vim.tbl_filter(function(hl_group)
-      return vim.startswith(hl_group, hl_prefix)
-    end, hl_groups)
-    table.sort(extracted)
-
-    return extracted
   end
 
   local function add_match(record, win_id)
@@ -244,6 +230,17 @@ describe('Module.highlight', function()
   -- / Subject
   -- -----------------------------------------------------------------------------------------------
   describe('define()', function()
+
+    local function extract_hldef()
+      local hl_prefix = child.config_of('plugin_name')
+      local hl_groups = vim.tbl_keys(child.api.nvim_get_hl(0, {}))
+      local extracted = vim.tbl_filter(function(hl_group)
+        return vim.startswith(hl_group, hl_prefix)
+      end, hl_groups)
+      table.sort(extracted)
+
+      return extracted
+    end
 
     describe('can register highlight', function()
 
