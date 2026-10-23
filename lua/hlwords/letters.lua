@@ -68,9 +68,6 @@ function M.to_pattern(target)
 end
 
 ---@return string
----
---- TODO: After "getregion()" is merged, refactor using it. And once it's merged and sufficient
----       functionality is implemented, "vim.region" will be deprecated and will not be used.
 function M.retrieve()
   -- In visual mode, only accepts Visual ("v", "viw") or V-Block ("^V"), not V-Line ("V").
   local is_visual_mode = utils.is_acceptable_vmode()
@@ -79,28 +76,9 @@ function M.retrieve()
     return fn.expand('<cword>')
   end
 
-  local start_row, start_col = fn.getpos('v')[2], fn.getpos('v')[3]
-  local end_row, end_col = fn.getpos('.')[2], fn.getpos('.')[3]
+  local lines = fn.getregion(fn.getpos('v'), fn.getpos('.'), { type = api.nvim_get_mode().mode })
 
-  -- Normalize the position to correspond to the tail processing rules of nvim_buf_get_text() in
-  -- the row/column direction.
-  if end_row < start_row then
-    start_row, end_row = end_row, start_row
-    start_col, end_col = end_col, start_col
-  elseif end_row == start_row and end_col < start_col then
-    start_col, end_col = end_col, start_col
-  end
-
-  -- In nvim_buf_get_text(), indexing is zero-based and row indices are end-inclusive, so simply
-  -- move the coordinates upward.
-  start_row = start_row - 1
-  end_row = end_row - 1
-
-  -- On the other hand, column indices are end-exclusive, so move only the starting position.
-  start_col = start_col - 1
-
-  local lines = api.nvim_buf_get_text(0, start_row, start_col, end_row, end_col, {})
-
+  -- Return to normal mode.
   vim.cmd('normal! ')
 
   if vim.tbl_isempty(lines) then
