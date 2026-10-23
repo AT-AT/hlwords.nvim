@@ -183,6 +183,19 @@ describe('Module.letters', function()
           eq('foo', actual)
         end)
 
+        it('selected by cursor including multibyte ones', function()
+          -- Arrange
+          child.prepare_words('foo文字列bar')
+          child.api.nvim_win_set_cursor(0, { 1, 3 })
+          child.type_keys('vll')
+
+          -- Act
+          local actual = child.lua_get([[SUT.retrieve()]])
+
+          -- Assert
+          eq('文字列', actual)
+        end)
+
         it('selected by cursor in reverse order', function()
           -- Arrange
           child.prepare_words('barfoobaz')
@@ -194,6 +207,19 @@ describe('Module.letters', function()
 
           -- Assert
           eq('foo', actual)
+        end)
+
+        it('selected by cursor in reverse order including multibyte ones', function()
+          -- Arrange
+          child.prepare_words('foo文字列bar')
+          child.api.nvim_win_set_cursor(0, { 1, 5 })
+          child.type_keys('$hhhvhh')
+
+          -- Act
+          local actual = child.lua_get([[SUT.retrieve()]])
+
+          -- Assert
+          eq('文字列', actual)
         end)
 
         it('selected block-wise', function()
