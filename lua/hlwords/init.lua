@@ -19,25 +19,25 @@ local highlight = require('hlwords.highlight')
 --  Namespace
 -- =================================================================================================
 
-local API = {}
+local M = {}
 
 
 -- =================================================================================================
 --  Function (API)
 -- =================================================================================================
 
-function API.accept()
+function M.accept()
   local word = letters.accept()
-  API.toggle(word)
+  M.toggle(word)
 end
 
-function API.clear()
+function M.clear()
   highlight.off()
 end
 
 ---@param local_options PluginOptions?
 ---
-function API.setup(local_options)
+function M.setup(local_options)
   config.merge_options(local_options or {})
   highlight.define()
   math.randomseed(os.time())
@@ -57,7 +57,7 @@ end
 
 ---@param from_input string
 ---
-function API.toggle(from_input)
+function M.toggle(from_input)
   local word = type(from_input) == 'string' and from_input or letters.retrieve()
 
   if #word == 0 then
@@ -79,8 +79,8 @@ end
 -- =================================================================================================
 
 return {
-  accept = API.accept,
-  clear = API.clear,
-  setup = API.setup,
-  toggle = API.toggle,
+  accept = M.accept,
+  clear = M.clear,
+  setup = M.setup,
+  toggle = M.toggle,
 }
