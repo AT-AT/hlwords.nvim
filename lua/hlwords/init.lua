@@ -36,6 +36,7 @@ function API.clear()
 end
 
 ---@param local_options PluginOptions?
+---
 function API.setup(local_options)
   config.merge_options(local_options or {})
   highlight.define()
@@ -55,6 +56,7 @@ function API.setup(local_options)
 end
 
 ---@param from_input string
+---
 function API.toggle(from_input)
   local word = type(from_input) == 'string' and from_input or letters.retrieve()
 

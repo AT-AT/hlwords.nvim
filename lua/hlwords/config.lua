@@ -20,13 +20,15 @@ local M = {}
 
 
 -- =================================================================================================
---  Function
+--  Definition
 -- =================================================================================================
 
 ---@type string
+---
 M.plugin_name = 'Hlwords'
 
 ---@type PluginOptions
+---
 M.default_options = {
   colors = {
     { fg = '#000000', bg = '#00ffff' },
@@ -40,9 +42,16 @@ M.default_options = {
 }
 
 ---@type PluginOptions
+---
 M.options = vim.tbl_deep_extend('force', {}, M.default_options)
 
+
+-- =================================================================================================
+--  Function (API)
+-- =================================================================================================
+
 ---@param local_options PluginOptions?
+---
 function M.merge_options(local_options)
   local_options = local_options or {}
   M.options = vim.tbl_deep_extend('force', M.options, local_options)

@@ -13,15 +13,19 @@
 -- =================================================================================================
 
 ---@see vim.api
+---
 local api = vim.api
 
 ---@see vim.fn
+---
 local fn = vim.fn
 
 ---@module 'hlwords.config'
+---
 local config = require('hlwords.config')
 
 ---@module 'hlwords.utils'
+---
 local utils = require('hlwords.utils')
 
 
@@ -33,87 +37,33 @@ local M = {}
 
 
 -- =================================================================================================
---  Function
+--  Definition
 -- =================================================================================================
 
 ---@type highlight_record[]
+---
 local records = {}
 
--- For testing (yes, this is BAD practice, but it's done for convenience, sorry).
-function M.grub_records()
-  return records
-end
 
--- / Record Modification
--- -------------------------------------------------------------------------------------------------
-
----@param hl_group highlight_group
----@param word_pattern word_pattern?
-function M.record(hl_group, word_pattern)
-  for _, record in ipairs(records) do
-    if record.hl_group == hl_group then
-      record.word_pattern = word_pattern
-      return
-    end
-  end
-
-  table.insert(records, { hl_group = hl_group, word_pattern = word_pattern })
-end
-
----@param hl_group highlight_group
-function M.register(hl_group)
-  M.record(hl_group, nil)
-end
-
----@param hl_group highlight_group
-function M.revert(hl_group)
-  M.record(hl_group, nil)
-end
+-- =================================================================================================
+--  Function (API)
+-- =================================================================================================
 
 -- / Record Manipulation
 -- -------------------------------------------------------------------------------------------------
 
 ---@param word_pattern word_pattern
 ---@return boolean
+---
 function M.is_used_for(word_pattern)
   return vim.tbl_count(M.record_of(word_pattern)) >= 1
-end
-
----@return highlight_group?
-function M.pick()
-  local picked = {}
-
-  for _, record in ipairs(records) do
-    if not record.word_pattern then
-      table.insert(picked, record.hl_group)
-    end
-  end
-
-  local picked_count = vim.tbl_count(picked)
-
-  if picked_count == 0 then
-    return nil
-  end
-
-  if config.options.random then
-    return picked[math.random(picked_count)]
-  else
-    return picked[1]
-  end
-end
-
----@param word_pattern word_pattern
----@return highlight_record[]
-function M.record_of(word_pattern)
-  return vim.tbl_filter(function(record)
-    return record.word_pattern == word_pattern
-  end, records)
 end
 
 -- / Match Manipulation
 -- -------------------------------------------------------------------------------------------------
 
 ---@param win_id integer
+---
 function M.apply(win_id)
   local priority = config.options.highlight_priority
   local matches = fn.getmatches(win_id)
@@ -184,9 +134,137 @@ function M.define()
   end
 end
 
+---@param word_pattern word_pattern?
+---
+function M.off(word_pattern)
+  local target = nil
+
+  if word_pattern == nil then
+    target = records
+  else
+    target = M.record_of(word_pattern)
+  end
+
+  if vim.tbl_count(target) == 0 then
+    if word_pattern then
+      utils.fail(string.format(
+        'Unable to find the highlight for "%s".', tostring(word_pattern)
+      ))
+    end
+
+    return
+  end
+
+  for _, record in ipairs(target) do
+    M.revert(record.hl_group)
+  end
+
+  M.propagate()
+end
+
+---@param word_pattern word_pattern
+---
+function M.on(word_pattern)
+  local hl_group = M.pick()
+
+  if not hl_group then
+    utils.warn('No more highlights in stock.')
+    return
+  end
+
+  M.record(hl_group, word_pattern)
+  M.propagate()
+end
+
+
+-- =================================================================================================
+--  Function (Helper)
+-- =================================================================================================
+
+-- For testing (yes, this is BAD practice, but it's done for convenience, sorry).
+--
+function M.grub_records()
+  return records
+end
+
+-- / Record Modification
+-- -------------------------------------------------------------------------------------------------
+
+---@private
+---@param hl_group highlight_group
+---@param word_pattern word_pattern?
+---
+function M.record(hl_group, word_pattern)
+  for _, record in ipairs(records) do
+    if record.hl_group == hl_group then
+      record.word_pattern = word_pattern
+      return
+    end
+  end
+
+  table.insert(records, { hl_group = hl_group, word_pattern = word_pattern })
+end
+
+---@private
+---@param hl_group highlight_group
+---
+function M.register(hl_group)
+  M.record(hl_group, nil)
+end
+
+---@private
+---@param hl_group highlight_group
+---
+function M.revert(hl_group)
+  M.record(hl_group, nil)
+end
+
+-- / Record Manipulation
+-- -------------------------------------------------------------------------------------------------
+
+---@private
+---@return highlight_group?
+---
+function M.pick()
+  local picked = {}
+
+  for _, record in ipairs(records) do
+    if not record.word_pattern then
+      table.insert(picked, record.hl_group)
+    end
+  end
+
+  local picked_count = vim.tbl_count(picked)
+
+  if picked_count == 0 then
+    return nil
+  end
+
+  if config.options.random then
+    return picked[math.random(picked_count)]
+  else
+    return picked[1]
+  end
+end
+
+---@private
+---@param word_pattern word_pattern
+---@return highlight_record[]
+---
+function M.record_of(word_pattern)
+  return vim.tbl_filter(function(record)
+    return record.word_pattern == word_pattern
+  end, records)
+end
+
+-- / Match Manipulation
+-- -------------------------------------------------------------------------------------------------
+
+---@private
 ---@param win_id number
 ---@param candidate number?
 ---@return match_id?
+---
 function M.fix_match_id(win_id, candidate)
   local max = 2000 -- Set a maximum limit just in case.
   local start = candidate or 1000
@@ -215,46 +293,8 @@ function M.fix_match_id(win_id, candidate)
   return nil
 end
 
----@param word_pattern word_pattern?
-function M.off(word_pattern)
-  local target = nil
-
-  if word_pattern == nil then
-    target = records
-  else
-    target = M.record_of(word_pattern)
-  end
-
-  if vim.tbl_count(target) == 0 then
-    if word_pattern then
-      utils.fail(string.format(
-        'Unable to find the highlight for "%s".', tostring(word_pattern)
-      ))
-    end
-
-    return
-  end
-
-  for _, record in ipairs(target) do
-    M.revert(record.hl_group)
-  end
-
-  M.propagate()
-end
-
----@param word_pattern word_pattern
-function M.on(word_pattern)
-  local hl_group = M.pick()
-
-  if not hl_group then
-    utils.warn('No more highlights in stock.')
-    return
-  end
-
-  M.record(hl_group, word_pattern)
-  M.propagate()
-end
-
+---@private
+---
 function M.propagate()
   local wins = api.nvim_list_wins()
 
