@@ -1,0 +1,7 @@
+{
+  "workspace.library": [
+    "deps",
+    "$VIMRUNTIME",
+    "${3rd}/luv/library"
+  ]
+}
