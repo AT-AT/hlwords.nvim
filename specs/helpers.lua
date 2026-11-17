@@ -19,6 +19,7 @@ local Helpers = {}
 ---@field change_config function
 ---@field config_of function
 ---@field append_stage function
+---@field move_to_buf function
 ---@field move_to_win function
 ---@field prepare_words function
 ---@field grub_matches function
@@ -63,6 +64,10 @@ function Helpers.new_child_neovim(path)
     return { buf = buf, win = win }
   end
 
+  function child.move_to_buf(buf_id)
+    child.api.nvim_set_current_buf(buf_id)
+  end
+
   function child.move_to_win(win_id)
     child.api.nvim_set_current_win(win_id)
   end
@@ -77,8 +82,10 @@ function Helpers.new_child_neovim(path)
       words = { 'foo', 'Foo' }
     end
 
-    child.api.nvim_buf_set_lines(0, 0, 0, true, words)
+    child.api.nvim_buf_set_lines(0, 0, -1, true, words)
     child.api.nvim_win_set_cursor(0, { 1, 0 })
+
+    return child.api.nvim_get_current_buf()
   end
 
   -- / Assertion Helper
@@ -218,31 +225,13 @@ Helpers.expect.is_visual_mode = MiniTest.new_expectation(
 -- / Inspection
 -- -------------------------------------------------------------------------------------------------
 
-function Helpers.dump(thing)
-  Helpers.print('----------')
-  Helpers.print(Helpers.to_string(thing))
-  Helpers.print('----------')
+function Helpers.p(thing)
+  vim.print('--------------------------------------------------')
+  vim.print(thing)
 end
 
-function Helpers.print(thing)
-  vim.notify(Helpers.to_string(thing))
-end
-
-function Helpers.to_string(thing)
-  if type(thing) == 'table' then
-    local joined = '{ '
-
-    for k, v in pairs(thing) do
-      if type(k) ~= 'number' then k = '"' .. k .. '"' end
-      joined = joined .. '['.. k ..'] = ' .. Helpers.to_string(v) .. ','
-    end
-
-    return joined .. ' }'
-  elseif thing == nil then
-    return 'nil'
-  else
-    return tostring(thing)
-  end
+function Helpers.mc()
+  vim.cmd('messages clear')
 end
 
 return Helpers
