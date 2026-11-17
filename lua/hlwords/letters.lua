@@ -3,15 +3,19 @@
 -- =================================================================================================
 
 ---@see vim.api
+---
 local api = vim.api
 
 ---@see vim.fn
+---
 local fn = vim.fn
 
 ---@module 'hlwords.config'
+---
 local config = require('hlwords.config')
 
 ---@module 'hlwords.utils'
+---
 local utils = require('hlwords.utils')
 
 
@@ -23,10 +27,11 @@ local M = {}
 
 
 -- =================================================================================================
---  Function
+--  Function (API)
 -- =================================================================================================
 
 ---@return string
+---
 function M.accept()
   -- https://github.com/kylechui/nvim-surround/blob/main/lua/nvim-surround/input.lua
   local status, result = pcall(
@@ -38,6 +43,7 @@ end
 
 ---@param target string
 ---@return string
+---
 function M.to_pattern(target)
   local is_visual_mode = utils.is_acceptable_vmode()
   local has_uppercase_letters = fn.match(target, '\\u') ~= -1
@@ -68,6 +74,7 @@ function M.to_pattern(target)
 end
 
 ---@return string
+---
 function M.retrieve()
   -- In visual mode, only accepts Visual ("v", "viw") or V-Block ("^V"), not V-Line ("V").
   local is_visual_mode = utils.is_acceptable_vmode()

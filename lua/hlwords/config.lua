@@ -1,18 +1,4 @@
 -- =================================================================================================
---  Types
--- =================================================================================================
-
----@alias color_spec table<string, any> Options acceptable to vim.api.nvim_set_hl()
-
--- https://github.com/LuaLS/lua-language-server/discussions/1436#discussioncomment-3318346
----@class PluginOptions
----@field colors table
----@field highlight_priority integer
----@field random boolean
----@field strict_word boolean
-
-
--- =================================================================================================
 --  Namespace
 -- =================================================================================================
 
@@ -20,13 +6,15 @@ local M = {}
 
 
 -- =================================================================================================
---  Function
+--  Definition
 -- =================================================================================================
 
 ---@type string
+---
 M.plugin_name = 'Hlwords'
 
 ---@type PluginOptions
+---
 M.default_options = {
   colors = {
     { fg = '#000000', bg = '#00ffff' },
@@ -40,9 +28,16 @@ M.default_options = {
 }
 
 ---@type PluginOptions
+---
 M.options = vim.tbl_deep_extend('force', {}, M.default_options)
 
+
+-- =================================================================================================
+--  Function (API)
+-- =================================================================================================
+
 ---@param local_options PluginOptions?
+---
 function M.merge_options(local_options)
   local_options = local_options or {}
   M.options = vim.tbl_deep_extend('force', M.options, local_options)

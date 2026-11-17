@@ -20,11 +20,13 @@ describe('Module.XXXXX', function()
     child.stop()
   end)
 
-  -- / Subject
+  -- / Category
   -- -----------------------------------------------------------------------------------------------
-  describe('XXXXX()', function()
+  describe('XXXXX', function()
 
-    describe('-----XXXXX-----', function()
+    -- / Subject
+    -- ---------------------------------------------------------------------------------------------
+    describe('XXXXX()', function()
 
       it('-----XXXXX-----', function()
         -- Arrange

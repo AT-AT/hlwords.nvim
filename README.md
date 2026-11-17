@@ -30,11 +30,9 @@ Install the plugin with your preferred package manager. Here is an example in [l
 ```lua
 {
   'AT-AT/hlwords.nvim',
-  config = function()
-    require('hlwords').setup({
-      -- options...
-    })
-  end,
+  opts = {
+    -- options...
+  },
 }
 ```
 
@@ -48,6 +46,7 @@ Below are the configurable options and their default values.
   -- You can set any number of color definition maps that are compatible with nvim_set_hl(),
   -- and can highlight as many items as you set here at the same time.
   -- See: https://neovim.io/doc/user/api.html#nvim_set_hl()
+  ---@type color_spec[]
   colors = {
     { fg = '#000000', bg = '#00ffff' },
     { fg = '#ffffff', bg = '#ff00ff' },
@@ -57,10 +56,12 @@ Below are the configurable options and their default values.
 
   -- Priority order when highlights overlap.
   -- See: https://neovim.io/doc/user/builtin.html#matchadd()
+  ---@type integer
   highlight_priority = 10,
 
   -- Order of use of highlight colors.
   -- If false, they will be used in the order specified in the "colors" option.
+  ---@type boolean
   random = true,
 
   -- Handling of words specified in normal mode.
@@ -68,6 +69,7 @@ Below are the configurable options and their default values.
   -- ('\\<' .. word .. '\\>') is used in interestingwords.nvim, but not in vim-quickhl.
   -- If set to false, the match pattern will no longer represent exact words, so the
   -- behavior will be similar to vim-quickhl.
+  ---@type boolean
   strict_word = false,
 }
 ```
@@ -94,7 +96,7 @@ vim.keymap.set('n', '<leader>hw', function() require('hlwords').accept() end)
 vim.keymap.set('n', '<leader>hc', function() require('hlwords').clear() end)
 ```
 
-If you are using Lazy.nvim, you can perform lazy loading at the same time by registering with the "keys" option.
+If you are using Lazy.nvim, you can perform lazy loading at the same time by registering with the `keys` option.
 ```lua
 {
   keys = {
@@ -130,4 +132,3 @@ If you are using Lazy.nvim, you can perform lazy loading at the same time by reg
 ## License
 
 [MIT](LICENSE)
-
